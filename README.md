@@ -61,36 +61,60 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 
 ### Quick Start with Docker (Recommended)
 
-1. **Clone and setup**:
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your GEMINI_API_KEY and VEO_API_KEY
-   ```
+**Step 1: Clone the repository**
+```bash
+git clone https://github.com/downcaster/adprompt.git
+cd adprompt
+```
 
-2. **Start all services**:
-   ```bash
-   make dev
-   # OR: docker-compose up -d
-   ```
+**Step 2: Get Google AI Studio API Keys**
 
-3. **Access the application**:
-   - Frontend Dashboard: http://localhost:3001
-   - Backend API: http://localhost:3000
-   - PostgreSQL: localhost:5432
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
+2. Create a new API key (one key works for both Gemini and Veo)
+3. Enable the Generative Language API if prompted
 
-4. **View logs**:
-   ```bash
-   make logs        # All services
-   make backend     # Backend only
-   make frontend    # Frontend only
-   ```
+**Step 3: Configure environment**
+```bash
+cp .env.example .env
+```
 
-5. **Stop services**:
-   ```bash
-   make down
-   ```
+Edit `.env` and add your API key:
+```env
+GEMINI_API_KEY=your_api_key_here
+VEO_API_KEY=  # Optional: leave empty to use GEMINI_API_KEY
+```
 
-See [DOCKER.md](./DOCKER.md) for complete Docker documentation.
+**Step 4: Start all services**
+```bash
+make dev
+# OR: docker-compose up -d
+```
+
+This will:
+- ✅ Start PostgreSQL database
+- ✅ Start Express backend API (port 3000)
+- ✅ Start Next.js frontend (port 3001)
+- ✅ Auto-create database tables
+- ✅ Enable hot reload for development
+
+**Step 5: Access the application**
+- **Frontend Dashboard**: http://localhost:3001
+- **Backend API**: http://localhost:3000/api
+- **PostgreSQL**: localhost:5432
+
+**Step 6: View logs (optional)**
+```bash
+make logs        # All services
+make backend     # Backend only
+make frontend    # Frontend only
+```
+
+**To stop services:**
+```bash
+make down
+```
+
+See [DOCKER.md](./DOCKER.md) for complete Docker documentation and troubleshooting.
 
 ### Local Development (Without Docker)
 
@@ -99,37 +123,58 @@ See [DOCKER.md](./DOCKER.md) for complete Docker documentation.
 - PostgreSQL running on localhost:5432
 - Google AI Studio API keys
 
-**Installation:**
-
+**Step 1: Clone and install dependencies**
 ```bash
+git clone https://github.com/downcaster/adprompt.git
+cd adprompt
 npm install
+cd apps/web && npm install && cd ../..
+```
+
+**Step 2: Start PostgreSQL**
+```bash
+# Using Homebrew (macOS)
+brew services start postgresql@14
+
+# OR using Docker
+docker run -d \
+  --name adprompt-db \
+  -e POSTGRES_USER=adprompt \
+  -e POSTGRES_PASSWORD=adprompt \
+  -e POSTGRES_DB=adprompt \
+  -p 5432:5432 \
+  postgres:15
+```
+
+**Step 3: Configure environment**
+```bash
 cp .env.example .env
 ```
 
 Edit `.env` with your credentials:
-- `GEMINI_API_KEY`
-- `VEO_API_KEY`
-- `DATABASE_URL` (e.g., `postgresql://user:pass@localhost:5432/adprompt`)
-- Optional: `DEFAULT_REGEN_LIMIT` (default: 5)
+```env
+GEMINI_API_KEY=your_api_key_here
+VEO_API_KEY=  # Optional
+DATABASE_URL=postgresql://adprompt:adprompt@localhost:5432/adprompt
+DEFAULT_REGEN_LIMIT=5  # Optional
+```
 
-**Database Setup:**
-
-The server bootstraps tables automatically on first run. Tables created: `users`, `brand_kits`, `campaign_briefs`, `scorecards`, `publish_logs`.
-
-**Running Services:**
-
-Backend (Express API):
+**Step 4: Start backend**
 ```bash
 npm run dev
 ```
 
-Frontend (Next.js):
+**Step 5: Start frontend (in a new terminal)**
 ```bash
 cd apps/web
 npm run dev
 ```
 
-Backend runs on port 3000, Frontend on port 3001.
+**Access:**
+- Backend: http://localhost:3000
+- Frontend: http://localhost:3001
+
+The server auto-creates tables on first run: `users`, `brand_kits`, `campaign_briefs`, `scorecards`, `publish_logs`.
 
 ### API Endpoints
 

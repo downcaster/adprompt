@@ -4,20 +4,51 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 
 ## Features
 
-- **Brand kit ingestion**: Upload logo, palette assets, and configure campaign briefs; palettes are auto-extracted via `node-vibrant` and stored in Postgres.
-- **Multi-agent critique engine**: Frame extraction with ffmpeg feeds Gemini 2.5 Flash specialist prompts (BrandFit, VisualQuality, Safety, Clarity). Responses are validated and aggregated into structured scorecards.
-- **Scorecard persistence**: Each critique iteration is stored in Postgres with public `/uploads/...` URLs, enabling history views and audit trails.
-- **Synchronous generation loop**: Veo generations incorporate brand/product assets, then auto-run through the critique engine until scores clear configurable thresholds (watchdog defaults to 5 iterations).
-- **Publishing workflow (planned)**: Approved ads will be posted to Instagram via Graph API, persisting publish metadata.
+### ✨ Core Workflow
+1. **Brand Kit Ingestion** - Upload logos, palette images, define brand voice, target audience, prohibited phrases
+2. **Campaign Creation** - Specify product, audience, tone keywords, upload product imagery
+3. **AI Video Generation** - Veo 3.1 creates 5-10 second ad videos from text prompts
+4. **Multi-Agent Critique** - 4 specialist Gemini agents analyze each video frame-by-frame
+5. **Adaptive Regeneration** - Failed videos trigger new generations with critique feedback incorporated into prompts
+6. **Video Gallery** - Browse all generated videos with scores, evidence, and playback
+7. **Audit Trail** - Every iteration, scorecard, and decision is persisted for compliance
+
+### 🎯 Key Capabilities
+- **Automatic palette extraction** - `node-vibrant` extracts brand colors from uploaded images
+- **Frame-by-frame analysis** - ffmpeg extracts frames, Gemini analyzes visual consistency
+- **Structured scoring** - Each agent returns 0.0-1.0 scores with concrete evidence and citations
+- **Feedback loop** - Prompts adapt based on previous critique (e.g., "BrandFit failed: logo too small")
+- **Watchdog protection** - Configurable iteration limit (default: 5) prevents infinite loops and runaway costs
+- **User-bound data** - Multi-tenancy with `X-User-Id` header, brand kits scoped per user
+- **Video serving** - Generated videos accessible via `/uploads/generated/` URLs
+- **Publishing logs** - Track which videos were posted to which platforms (Instagram, TikTok, YouTube)
 
 ## Tech Stack
 
-- Node.js 20, TypeScript, Express
-- Google AI Studio APIs (Gemini 2.5 Flash, Veo)
-- Postgres for persistence; local `storage/uploads/` for assets
-- ffmpeg + `fluent-ffmpeg` for frame extraction
-- `node-vibrant`, `opencv4nodejs` (planned) for visual checks
-- React + Vite dashboard with shadcn/ui (planned)
+### Backend
+- **Node.js 20** + **TypeScript** + **Express** - API server
+- **PostgreSQL** - Persistence for users, brand kits, campaigns, scorecards, publish logs
+- **Docker & Docker Compose** - Containerized development with hot reload
+
+### AI Models
+- **Veo 3.1 (Generate Preview)** - Text-to-video generation (5-10 second ads)
+- **Gemini 2.5 Flash** - Powers 4 specialist critique agents
+
+### Critique Agents
+1. **BrandFit Agent** - Logo correctness, palette adherence, tone alignment, prohibited phrases
+2. **VisualQuality Agent** - Sharpness, lighting, composition, no glitches/watermarks
+3. **Safety Agent** - Harmful content, bias, misleading claims, copyright issues
+4. **Clarity Agent** - Product understanding, CTA clarity, message alignment
+
+### Video Processing
+- **ffmpeg** - Frame extraction from generated videos
+- **`fluent-ffmpeg`** - Node.js wrapper for ffmpeg
+- **`node-vibrant`** - Automatic color palette extraction from images
+
+### Frontend
+- **Next.js 16** (Turbopack) - React framework with server components
+- **shadcn/ui** - Beautiful, accessible UI components
+- **Tailwind CSS** - Utility-first styling
 
 ## Getting Started
 
@@ -164,13 +195,79 @@ storage/
   tmp/            # Temporary frame storage (gitignored)
 ```
 
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  Frontend (Next.js + shadcn/ui)                          │
+│  - Brand kit upload                                      │
+│  - Campaign creation                                     │
+│  - Video gallery with playback                           │
+│  - Scorecard visualization                               │
+└────────────────────┬─────────────────────────────────────┘
+                     │ HTTP (localhost:3001 → 3000)
+                     ▼
+┌──────────────────────────────────────────────────────────┐
+│  Backend (Express API)                                   │
+│  - REST endpoints for CRUD operations                    │
+│  - File upload handling (multer)                         │
+│  - Video serving (/uploads/generated/...)               │
+└────────┬────────────────┬────────────────────────────────┘
+         │                │
+         │                ▼
+         │     ┌─────────────────────────────────────┐
+         │     │  Veo 3.1 Generate Preview           │
+         │     │  (Google AI Studio)                 │
+         │     │  - Text-to-video generation         │
+         │     │  - 5-10 second ads                  │
+         │     └─────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────┐
+│  Multi-Agent Critique Engine                             │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ Orchestrator                                       │  │
+│  │ 1. Extract frames with ffmpeg                      │  │
+│  │ 2. Call 4 specialist agents in parallel           │  │
+│  │ 3. Aggregate scores → pass/fail decision           │  │
+│  │ 4. If fail: regenerate with feedback              │  │
+│  └────────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐    │
+│  │ BrandFit     │ │ VisualQuality│ │ Safety       │    │
+│  │ Agent        │ │ Agent        │ │ Agent        │    │
+│  │ (Gemini 2.5) │ │ (Gemini 2.5) │ │ (Gemini 2.5) │    │
+│  └──────────────┘ └──────────────┘ └──────────────┘    │
+│  ┌──────────────┐                                       │
+│  │ Clarity      │                                       │
+│  │ Agent        │                                       │
+│  │ (Gemini 2.5) │                                       │
+│  └──────────────┘                                       │
+└────────┬─────────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────┐
+│  PostgreSQL Database                                     │
+│  - users, brand_kits, campaign_briefs                    │
+│  - scorecards (with video URLs)                          │
+│  - publish_logs                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
 ## Roadmap
 
-- [x] Wire Veo generation + regeneration loop
-- [ ] Add auxiliary OpenCV logo/palette similarity scoring
-- [ ] Persist critique scorecards and publish logs
-- [ ] Build React dashboard (shadcn/ui) for human review + Instagram publish
-- [ ] Regression tests & CI pipeline
+- [x] ✅ Veo 3.1 video generation with text prompts
+- [x] ✅ Multi-agent critique with 4 specialist Gemini agents
+- [x] ✅ Adaptive regeneration loop with feedback incorporation
+- [x] ✅ Scorecard persistence in PostgreSQL
+- [x] ✅ Video gallery UI with playback
+- [x] ✅ Docker setup with hot reload
+- [x] ✅ E2E tests for Gemini and Veo APIs
+- [ ] OpenCV logo/palette similarity scoring
+- [ ] Instagram Graph API integration for publishing
+- [ ] CI/CD pipeline with automated tests
+- [ ] Video quality metrics (resolution, bitrate analysis)
+- [ ] A/B testing framework for prompt variations
 
 ## Contributing
 

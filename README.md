@@ -10,7 +10,10 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 2. **Campaign Creation** - Specify product, audience, tone keywords, upload product imagery
 3. **AI Video Generation** - Veo 3.1 creates 5-10 second ad videos from text prompts
 4. **Multi-Agent Critique** - 4 specialist Gemini agents analyze each video frame-by-frame
-5. **Adaptive Regeneration** - Failed videos trigger new generations with critique feedback incorporated into prompts
+5. **Adaptive Regeneration** - Failed videos trigger new generations with critique feedback **automatically injected into the Veo prompt**
+   - Iteration 1: `"No previous critique feedback; this is the first attempt."`
+   - Iteration 2+: `"Previous critique: BrandFit=0.6 (fail) => Logo too small | VisualQuality=0.9 (pass) => Good lighting | ..."`
+   - Veo learns from each critique and improves subsequent generations
 6. **Video Gallery** - Browse all generated videos with scores, evidence, and playback
 7. **Audit Trail** - Every iteration, scorecard, and decision is persisted for compliance
 
@@ -19,7 +22,9 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 - **Automatic palette extraction** - `node-vibrant` extracts brand colors from uploaded images
 - **Frame-by-frame analysis** - ffmpeg extracts frames, Gemini analyzes visual consistency
 - **Structured scoring** - Each agent returns 0.0-1.0 scores with concrete evidence and citations
-- **Feedback loop** - Prompts adapt based on previous critique (e.g., "BrandFit failed: logo too small")
+- **Smart feedback loop** - Each Veo prompt includes full critique from previous iteration
+  - Orchestrator automatically appends: `"BrandFit=0.6 (fail) => Logo too small"` to next prompt
+  - No manual intervention required - the system learns and adapts automatically
 - **Watchdog protection** - Configurable iteration limit (default: 5) prevents infinite loops and runaway costs
 - **User-bound data** - Multi-tenancy with `X-User-Id` header, brand kits scoped per user
 - **Video serving** - Generated videos accessible via `/uploads/generated/` URLs

@@ -3,9 +3,9 @@
 BrandAI is a hackathon prototype that automates quality control for AI-generated ads. It ingests brand kits, orchestrates Gemini 2.5 Flash specialist agents to critique generated videos, and can trigger Veo regenerations until the output is safe, on-brand, and ready for human approval.
 
 ## Features
-- **Brand kit ingestion**: Upload logo, palette assets, and campaign briefs; palettes are auto-extracted via `node-vibrant` and stored in Postgres.
+- **Brand kit ingestion**: Upload logo, palette assets, and configure campaign briefs; palettes are auto-extracted via `node-vibrant` and stored in Postgres.
 - **Multi-agent critique engine**: Frame extraction with ffmpeg feeds Gemini 2.5 Flash specialist prompts (BrandFit, VisualQuality, Safety, Clarity). Responses are validated and aggregated into structured scorecards.
-- **Regeneration loop (planned)**: Orchestrator will refine Veo prompts using critique feedback, honoring configurable watchdog limits.
+- **Synchronous generation loop**: Veo generations incorporate brand/product assets, then auto-run through the critique engine until scores clear configurable thresholds (watchdog defaults to 5 iterations).
 - **Publishing workflow (planned)**: Approved ads will be posted to Instagram via Graph API, persisting publish metadata.
 
 ## Tech Stack
@@ -50,7 +50,11 @@ Available endpoints (prefix `/api`):
 - `GET /brand-kits` – list kits for the authenticated user (requires `X-User-Id` header)
 - `GET /brand-kits/:id` – fetch single kit
 - `POST /brand-kits` – multipart upload for logo/palette plus metadata
-- Additional critique/generation routes coming soon
+- `GET /campaigns?brandKitId=` – list campaigns for a kit
+- `POST /campaigns` – create campaign brief (`multipart/form-data` with `product` image, optional `assets[]`)
+- `POST /generation/generate` – single Veo pass (no critique)
+- `POST /generation/generate-and-critique` – run Veo + critique loop until success or watchdog limit
+- `POST /generation/regenerate` – convenience alias to re-run the loop with updated thresholds/limits
 
 ### Testing (planned)
 Vitest suite to cover prompt builders, aggregation logic, and integration mocks for Gemini will arrive as the critique engine stabilizes.
@@ -60,10 +64,13 @@ Vitest suite to cover prompt builders, aggregation logic, and integration mocks 
 src/
   config/        # Environment + Google AI client wrappers
   db/            # Postgres pool and DAO helpers
-  prompt/        # Prompt templates for agents
+  prompt/        # Prompt templates for agents & Veo
   routes/        # Express route registrations
   services/
+    campaignService.ts
+    brandKitService.ts
     critique/    # Multi-agent critique orchestration
+    generation/  # Veo proxy + regen orchestrator
   types/         # Shared TypeScript interfaces
   utils/         # Video frame extraction, helpers
 uploads/          # Uploaded brand assets (gitignored)
@@ -71,7 +78,7 @@ tmp/              # Temporary frame storage (gitignored)
 ```
 
 ## Roadmap
-- [ ] Wire Veo generation + regeneration loop
+- [x] Wire Veo generation + regeneration loop
 - [ ] Add auxiliary OpenCV logo/palette similarity scoring
 - [ ] Persist critique scorecards and publish logs
 - [ ] Build React dashboard (shadcn/ui) for human review + Instagram publish

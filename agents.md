@@ -57,7 +57,7 @@ if documents are not present, let's create them.
 
 ## Quick Reference
 
--### Tech Stack
+### Tech Stack
 
 - Node.js 20+, TypeScript, Express
 - Google AI Studio (Gemini 2.5 Flash, Veo)
@@ -73,6 +73,8 @@ if documents are not present, let's create them.
 - Regeneration loop with watchdog to cap iterations and spend
 - Require X-User headers for tenancy; store brand kits + scorecards per user
 - Default specialist prompts live in `src/services/critique/agentConfigs.ts`; keep them updated with brand policies
+- Campaign briefs require product imagery uploads; Veo generation endpoints live under `/api/generation`
+- Generated videos are saved to `uploads/generated` for critique and static serving
 
 ### When in Doubt
 

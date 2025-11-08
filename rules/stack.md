@@ -8,6 +8,7 @@
 - Palette extraction: `node-vibrant` for pulling HEX swatches from uploaded palette assets.
 - Storage: Postgres (primary store for users, brand kits, briefs, scorecards, publish logs) with asset files persisted locally under `uploads/` (gitignored).
 - Frontend: React + Vite client consuming the API, using shadcn/ui as the shared design system (to be scaffolded).
+- Asset handling: `multer` + helpers in `src/utils/uploads.ts`, `mime-types` for Veo asset MIME detection. Generated videos are written to `uploads/generated` for static serving & critique.
 
 ## Critique Engine Multi-Agent Workflow
 - **Orchestrator Agent** assembles critique context, invokes specialist agents, and aggregates their JSON responses.
@@ -23,6 +24,12 @@
   ```
 - The orchestrator merges agent outputs into the canonical scorecard, recording provenance for each dimension.
 - Default specialist system prompts are defined in `src/services/critique/agentConfigs.ts`. Update these when brand-specific policies evolve.
+
+## Generation Workflow
+- Campaign briefs (`src/routes/campaign.ts`) collect product imagery and tone metadata per brand kit.
+- Veo requests are assembled via `src/prompt/generationTemplate.ts` and executed in `src/services/generation/generationProxy.ts`, attaching brand/product assets as inline data blobs.
+- `src/services/generation/orchestrator.ts` sequences Veo generation with critique loops, honoring per-campaign regen limits and score thresholds.
+- REST endpoints under `/api/generation` expose single-pass generation, generate+critique, and regeneration flows.
 
 ## Regeneration Loop
 - When any dimension falls below threshold, the orchestrator refines the Veo prompt using agent feedback, triggers regeneration, and re-runs the critique.

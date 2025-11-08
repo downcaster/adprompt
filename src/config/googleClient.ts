@@ -11,16 +11,20 @@ const VEO_BASE_URL = 'https://videogen.googleapis.com/v1beta';
 type GoogleRequestOptions = {
   path: string;
   body: unknown;
+  apiKey: string;
 };
 
 /**
  * Minimal client for interacting with Google AI Studio REST endpoints.
  */
 export class GoogleAIClient {
-  public constructor(private readonly apiKey: string = env.googleApiKey) {}
+  public constructor(
+    private readonly geminiKey: string = env.geminiApiKey,
+    private readonly veoKey: string = env.veoApiKey,
+  ) {}
 
-  private async post<T>({ path, body }: GoogleRequestOptions): Promise<T> {
-    const response = await fetch(`${path}&key=${this.apiKey}`, {
+  private async post<T>({ path, body, apiKey }: GoogleRequestOptions): Promise<T> {
+    const response = await fetch(`${path}&key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +48,7 @@ export class GoogleAIClient {
     payload: unknown,
   ): Promise<TResponse> {
     const path = `${GEMINI_BASE_URL}/models/${model}:generateContent?alt=json`;
-    return this.post<TResponse>({ path, body: payload });
+    return this.post<TResponse>({ path, body: payload, apiKey: this.geminiKey });
   }
 
   /**
@@ -52,7 +56,7 @@ export class GoogleAIClient {
    */
   public async callVeo<TResponse>(payload: unknown): Promise<TResponse> {
     const path = `${VEO_BASE_URL}/videos:generate?alt=json`;
-    return this.post<TResponse>({ path, body: payload });
+    return this.post<TResponse>({ path, body: payload, apiKey: this.veoKey });
   }
 }
 
@@ -60,3 +64,8 @@ export class GoogleAIClient {
  * Shared singleton instance to be reused across the application.
  */
 export const googleClient = new GoogleAIClient();
+/**
+ * @file Exposes thin wrappers around Google AI Studio endpoints (Gemini 2.5 Flash, Veo) with
+ *       centralized authentication and error handling.
+ */
+

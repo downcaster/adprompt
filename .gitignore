@@ -1,7 +1,6 @@
 node_modules
 .env
-uploads/
-tmp/
+storage/
 dist/
 .DS_Store
 coverage/

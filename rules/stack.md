@@ -6,9 +6,9 @@
 - AI Services: Google AI Studio (Gemini 2.5 Flash for critique agents, Veo for generation) via REST APIs.
 - Media tooling: `ffmpeg` for frame extraction, `opencv4nodejs` for logo/palette checks.
 - Palette extraction: `node-vibrant` for pulling HEX swatches from uploaded palette assets.
-- Storage: Postgres (primary store for users, brand kits, briefs, scorecards, publish logs) with asset files persisted locally under `uploads/` (gitignored).
+- Storage: Postgres (primary store for users, brand kits, briefs, scorecards, publish logs) with asset files persisted locally under `storage/uploads/` (gitignored).
 - Frontend: React + Vite client consuming the API, using shadcn/ui as the shared design system (to be scaffolded).
-- Asset handling: `multer` + helpers in `src/utils/uploads.ts`, `mime-types` for Veo asset MIME detection. Generated videos are written to `uploads/generated` for static serving & critique.
+- Asset handling: `multer` + helpers in `src/utils/uploads.ts`, `mime-types` for Veo asset MIME detection. Generated videos are written to `storage/uploads/generated` (served publicly at `/uploads/...`).
 - TypeScript policy: avoid `any`. When inference fails, use specific interfaces or `unknown` with runtime validation (e.g., Zod).
 
 ## Critique Engine Multi-Agent Workflow

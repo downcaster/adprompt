@@ -19,10 +19,11 @@ const envSchema = z.object({
       }
       return parsed;
     }),
-  GOOGLE_API_KEY: z.string().min(1, { message: 'GOOGLE_API_KEY is required' }),
+  GEMINI_API_KEY: z.string().min(1, { message: 'GEMINI_API_KEY is required' }),
+  VEO_API_KEY: z.string().min(1, { message: 'VEO_API_KEY is required' }),
   DATABASE_URL: z.string().min(1, { message: 'DATABASE_URL is required' }),
-  UPLOAD_DIR: z.string().default('uploads'),
-  TEMP_DIR: z.string().default('tmp'),
+  UPLOAD_DIR: z.string().default('storage/uploads'),
+  TEMP_DIR: z.string().default('storage/tmp'),
   DEFAULT_REGEN_LIMIT: z
     .string()
     .default('5')
@@ -50,7 +51,8 @@ if (!parsed.success) {
 export const env = {
   nodeEnv: parsed.data.NODE_ENV,
   port: parsed.data.PORT,
-  googleApiKey: parsed.data.GOOGLE_API_KEY,
+  geminiApiKey: parsed.data.GEMINI_API_KEY,
+  veoApiKey: parsed.data.VEO_API_KEY,
   databaseUrl: parsed.data.DATABASE_URL,
   uploadDir: parsed.data.UPLOAD_DIR,
   tempDir: parsed.data.TEMP_DIR,

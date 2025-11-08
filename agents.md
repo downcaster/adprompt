@@ -60,8 +60,8 @@ if documents are not present, let's create them.
 ### Tech Stack
 
 - Node.js 20+, TypeScript, Express
-- Google AI Studio (Gemini 2.5 Flash, Veo)
-- Postgres for persistence, local `uploads/` for assets
+- Google AI Studio (Gemini 2.5 Flash, Veo) with separate `GEMINI_API_KEY` / `VEO_API_KEY`
+- Postgres for persistence, local `storage/uploads/` for assets
 - ffmpeg for frame extraction
 - opencv4nodejs + node-vibrant for visual checks/palette extraction
 - React + Vite dashboard (shadcn/ui design system) [planned]
@@ -74,7 +74,7 @@ if documents are not present, let's create them.
 - Require X-User headers for tenancy; store brand kits + scorecards per user
 - Default specialist prompts live in `src/services/critique/agentConfigs.ts`; keep them updated with brand policies
 - Campaign briefs require product imagery uploads; Veo generation endpoints live under `/api/generation`
-- Generated videos are saved to `uploads/generated` for critique and static serving
+- Generated videos are saved to `storage/uploads/generated` (served at `/uploads/...`) for critique and static serving
 - Run `npm run test` (Vitest) before pushes; add cases when adding prompts or aggregation logic
 - Avoid `any` in TypeScript; prefer precise types or `unknown` + validation when inference fails
 

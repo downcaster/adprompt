@@ -23,7 +23,7 @@ describe('aggregateScores', () => {
     ];
 
     const scorecard = aggregateScores(responses, {
-      assetUrl: 'uploads/generated/test.mp4',
+      assetUrl: '/uploads/generated/test.mp4',
       iterations: 1,
       threshold: 0.8,
     });
@@ -41,7 +41,7 @@ describe('aggregateScores', () => {
     ];
 
     const scorecard = aggregateScores(responses, {
-      assetUrl: 'uploads/generated/test.mp4',
+      assetUrl: '/uploads/generated/test.mp4',
       iterations: 2,
       threshold: 0.8,
     });

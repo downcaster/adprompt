@@ -40,7 +40,7 @@ const responses = [
 ];
 
 const scorecard = aggregateScores(responses, {
-  assetUrl: 'uploads/generated/demo.mp4',
+  assetUrl: '/uploads/generated/demo.mp4',
   iterations: 1,
   threshold: 0.8,
 });

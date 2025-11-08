@@ -5,6 +5,7 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 ## Features
 
 ### ✨ Core Workflow
+
 1. **Brand Kit Ingestion** - Upload logos, palette images, define brand voice, target audience, prohibited phrases
 2. **Campaign Creation** - Specify product, audience, tone keywords, upload product imagery
 3. **AI Video Generation** - Veo 3.1 creates 5-10 second ad videos from text prompts
@@ -14,6 +15,7 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 7. **Audit Trail** - Every iteration, scorecard, and decision is persisted for compliance
 
 ### 🎯 Key Capabilities
+
 - **Automatic palette extraction** - `node-vibrant` extracts brand colors from uploaded images
 - **Frame-by-frame analysis** - ffmpeg extracts frames, Gemini analyzes visual consistency
 - **Structured scoring** - Each agent returns 0.0-1.0 scores with concrete evidence and citations
@@ -26,26 +28,31 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 ## Tech Stack
 
 ### Backend
+
 - **Node.js 20** + **TypeScript** + **Express** - API server
 - **PostgreSQL** - Persistence for users, brand kits, campaigns, scorecards, publish logs
 - **Docker & Docker Compose** - Containerized development with hot reload
 
 ### AI Models
+
 - **Veo 3.1 (Generate Preview)** - Text-to-video generation (5-10 second ads)
 - **Gemini 2.5 Flash** - Powers 4 specialist critique agents
 
 ### Critique Agents
+
 1. **BrandFit Agent** - Logo correctness, palette adherence, tone alignment, prohibited phrases
 2. **VisualQuality Agent** - Sharpness, lighting, composition, no glitches/watermarks
 3. **Safety Agent** - Harmful content, bias, misleading claims, copyright issues
 4. **Clarity Agent** - Product understanding, CTA clarity, message alignment
 
 ### Video Processing
+
 - **ffmpeg** - Frame extraction from generated videos
 - **`fluent-ffmpeg`** - Node.js wrapper for ffmpeg
 - **`node-vibrant`** - Automatic color palette extraction from images
 
 ### Frontend
+
 - **Next.js 16** (Turbopack) - React framework with server components
 - **shadcn/ui** - Beautiful, accessible UI components
 - **Tailwind CSS** - Utility-first styling
@@ -62,6 +69,7 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 ### Quick Start with Docker (Recommended)
 
 **Step 1: Clone the repository**
+
 ```bash
 git clone https://github.com/downcaster/adprompt.git
 cd adprompt
@@ -74,23 +82,27 @@ cd adprompt
 3. Enable the Generative Language API if prompted
 
 **Step 3: Configure environment**
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` and add your API key:
+
 ```env
 GEMINI_API_KEY=your_api_key_here
 VEO_API_KEY=  # Optional: leave empty to use GEMINI_API_KEY
 ```
 
 **Step 4: Start all services**
+
 ```bash
 make dev
 # OR: docker-compose up -d
 ```
 
 This will:
+
 - ✅ Start PostgreSQL database
 - ✅ Start Express backend API (port 3000)
 - ✅ Start Next.js frontend (port 3001)
@@ -98,11 +110,13 @@ This will:
 - ✅ Enable hot reload for development
 
 **Step 5: Access the application**
+
 - **Frontend Dashboard**: http://localhost:3001
 - **Backend API**: http://localhost:3000/api
 - **PostgreSQL**: localhost:5432
 
 **Step 6: View logs (optional)**
+
 ```bash
 make logs        # All services
 make backend     # Backend only
@@ -110,6 +124,7 @@ make frontend    # Frontend only
 ```
 
 **To stop services:**
+
 ```bash
 make down
 ```
@@ -119,11 +134,13 @@ See [DOCKER.md](./DOCKER.md) for complete Docker documentation and troubleshooti
 ### Local Development (Without Docker)
 
 **Prerequisites:**
+
 - Node.js 20+
 - PostgreSQL running on localhost:5432
 - Google AI Studio API keys
 
 **Step 1: Clone and install dependencies**
+
 ```bash
 git clone https://github.com/downcaster/adprompt.git
 cd adprompt
@@ -132,6 +149,7 @@ cd apps/web && npm install && cd ../..
 ```
 
 **Step 2: Start PostgreSQL**
+
 ```bash
 # Using Homebrew (macOS)
 brew services start postgresql@14
@@ -147,11 +165,13 @@ docker run -d \
 ```
 
 **Step 3: Configure environment**
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` with your credentials:
+
 ```env
 GEMINI_API_KEY=your_api_key_here
 VEO_API_KEY=  # Optional
@@ -160,17 +180,20 @@ DEFAULT_REGEN_LIMIT=5  # Optional
 ```
 
 **Step 4: Start backend**
+
 ```bash
 npm run dev
 ```
 
 **Step 5: Start frontend (in a new terminal)**
+
 ```bash
 cd apps/web
 npm run dev
 ```
 
 **Access:**
+
 - Backend: http://localhost:3000
 - Frontend: http://localhost:3001
 
@@ -196,12 +219,14 @@ Available endpoints (prefix `/api`):
 ### Testing
 
 **With Docker:**
+
 ```bash
 make test        # Unit tests only
 make test-api    # API tests (uses real API keys, consumes quota)
 ```
 
 **Without Docker:**
+
 ```bash
 npm test              # Unit tests only
 npm run test:api      # API tests (uses real API keys, consumes quota)

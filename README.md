@@ -56,8 +56,23 @@ Available endpoints (prefix `/api`):
 - `POST /generation/generate-and-critique` – run Veo + critique loop until success or watchdog limit
 - `POST /generation/regenerate` – convenience alias to re-run the loop with updated thresholds/limits
 
-### Testing (planned)
-Vitest suite to cover prompt builders, aggregation logic, and integration mocks for Gemini will arrive as the critique engine stabilizes.
+### Testing
+Run the unit test suite with:
+```bash
+npm run test
+```
+Watch mode is available during development:
+```bash
+npm run test:watch
+```
+Current coverage focuses on score aggregation and prompt builders; extend with integration tests as the Gemini/Veo flows stabilize.
+
+### Sample Scripts
+Generate a mock scorecard from canned agent outputs:
+```bash
+npm run sample:scorecard
+```
+Use this to demonstrate the JSON structure to stakeholders without invoking external APIs.
 
 ## Project Structure
 ```text

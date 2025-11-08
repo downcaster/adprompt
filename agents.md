@@ -75,6 +75,7 @@ if documents are not present, let's create them.
 - Default specialist prompts live in `src/services/critique/agentConfigs.ts`; keep them updated with brand policies
 - Campaign briefs require product imagery uploads; Veo generation endpoints live under `/api/generation`
 - Generated videos are saved to `uploads/generated` for critique and static serving
+- Run `npm run test` (Vitest) before pushes; add cases when adding prompts or aggregation logic
 
 ### When in Doubt
 

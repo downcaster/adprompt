@@ -2,13 +2,13 @@
  * @file Orchestrates Veo generation with optional critique feedback loop.
  */
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import type { BrandKit, CampaignBrief, Scorecard } from '../../types/scorecard.js';
+import type { BrandKit, CampaignBrief, Scorecard, ScorecardRecord } from '../../types/scorecard.js';
 import { generateVideo } from './generationProxy.js';
 import { runCritique } from '../critique/index.js';
 import type { CritiqueContext } from '../../prompt/critiqueTemplate.js';
 import { defaultSpecialistConfigs } from '../critique/agentConfigs.js';
+import { createScorecardRecord } from '../../db/scorecards.js';
+import { buildPublicUploadUrl, toUploadsRelativePath } from '../../utils/uploads.js';
 
 const SCORE_THRESHOLD = 0.8;
 
@@ -33,6 +33,7 @@ export interface GenerationResult {
   videoPath: string;
   jobId?: string;
   scorecard?: Scorecard;
+  scorecardRecord?: ScorecardRecord;
   rawGeneration: unknown;
   passed: boolean;
 }
@@ -69,9 +70,12 @@ export const generateWithCritique = async (
       previousScorecard,
     });
 
+    const videoPublicUrl = buildPublicUploadUrl(generation.videoPath);
+    const uploadsRelativePath = toUploadsRelativePath(generation.videoPath);
+
     const critique = await runCritique({
       assetPath: generation.videoPath,
-      assetUrl: path.relative(process.cwd(), generation.videoPath),
+      assetUrl: videoPublicUrl,
       context: contextBase,
       specialistConfigs: defaultSpecialistConfigs,
       frameSampleCount: 6,
@@ -80,11 +84,22 @@ export const generateWithCritique = async (
 
     const passed = critique.overallStatus === 'pass';
 
+    const scorecardRecord = await createScorecardRecord({
+      brandKitId: options.brand.id,
+      campaignId: options.campaign.id,
+      iteration,
+      overallStatus: critique.overallStatus,
+      scorecard: critique,
+      videoPath: uploadsRelativePath,
+      videoUrl: videoPublicUrl,
+    });
+
     const result: GenerationResult = {
       iteration,
-      videoPath: generation.videoPath,
+      videoPath: uploadsRelativePath,
       jobId: generation.jobId,
       scorecard: critique,
+      scorecardRecord,
       rawGeneration: generation.rawResponse,
       passed,
     };
@@ -112,7 +127,7 @@ export const generateOnly = async (
 
   return {
     iteration: 1,
-    videoPath: generation.videoPath,
+    videoPath: toUploadsRelativePath(generation.videoPath),
     jobId: generation.jobId,
     rawGeneration: generation.rawResponse,
     passed: false,

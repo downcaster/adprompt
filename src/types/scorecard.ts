@@ -55,3 +55,28 @@ export interface CampaignBrief {
   regenLimit: number;
   createdAt: string;
 }
+
+export interface ScorecardRecord {
+  id: string;
+  brandKitId: string;
+  campaignId: string;
+  iteration: number;
+  overallStatus: AgentStatus;
+  scorecard: Scorecard;
+  videoPath: string;
+  videoUrl: string;
+  createdAt: string;
+}
+
+export interface PublishLogRecord {
+  id: string;
+  brandKitId: string;
+  campaignId: string;
+  scorecardId?: string;
+  platform: string;
+  status: string;
+  externalId?: string;
+  externalUrl?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}

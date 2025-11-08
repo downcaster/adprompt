@@ -5,6 +5,7 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 ## Features
 - **Brand kit ingestion**: Upload logo, palette assets, and configure campaign briefs; palettes are auto-extracted via `node-vibrant` and stored in Postgres.
 - **Multi-agent critique engine**: Frame extraction with ffmpeg feeds Gemini 2.5 Flash specialist prompts (BrandFit, VisualQuality, Safety, Clarity). Responses are validated and aggregated into structured scorecards.
+- **Scorecard persistence**: Each critique iteration is stored in Postgres with public `/uploads/...` URLs, enabling history views and audit trails.
 - **Synchronous generation loop**: Veo generations incorporate brand/product assets, then auto-run through the critique engine until scores clear configurable thresholds (watchdog defaults to 5 iterations).
 - **Publishing workflow (planned)**: Approved ads will be posted to Instagram via Graph API, persisting publish metadata.
 
@@ -39,7 +40,7 @@ The server bootstraps tables automatically. To initialize manually:
 npm run build
 npm run start
 ```
-Tables created: `users`, `brand_kits`, `campaign_briefs` (more coming for scorecards/publish logs).
+Tables created: `users`, `brand_kits`, `campaign_briefs`, `scorecards`, `publish_logs`.
 
 ### Development
 Run the dev server with hot reload:
@@ -55,6 +56,10 @@ Available endpoints (prefix `/api`):
 - `POST /generation/generate` – single Veo pass (no critique)
 - `POST /generation/generate-and-critique` – run Veo + critique loop until success or watchdog limit
 - `POST /generation/regenerate` – convenience alias to re-run the loop with updated thresholds/limits
+- `GET /scorecards?brandKitId=` / `?campaignId=` – list stored critique scorecards (requires ownership)
+- `GET /scorecards/:id` – fetch a single scorecard
+- `POST /publish-logs` – record an external publish event (platform, status, optional metadata)
+- `GET /publish-logs?campaignId=` – view publish history for a campaign
 
 ### Testing
 Run the unit test suite with:

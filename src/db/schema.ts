@@ -34,6 +34,29 @@ const bootstrapStatements = [
       additional_assets TEXT[],
       regen_limit INTEGER NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`,
+  `CREATE TABLE IF NOT EXISTS scorecards (
+      id UUID PRIMARY KEY,
+      brand_kit_id UUID NOT NULL REFERENCES brand_kits(id) ON DELETE CASCADE,
+      campaign_id UUID NOT NULL REFERENCES campaign_briefs(id) ON DELETE CASCADE,
+      iteration INTEGER NOT NULL,
+      overall_status TEXT NOT NULL,
+      scorecard JSONB NOT NULL,
+      video_path TEXT NOT NULL,
+      video_url TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`,
+  `CREATE TABLE IF NOT EXISTS publish_logs (
+      id UUID PRIMARY KEY,
+      brand_kit_id UUID NOT NULL REFERENCES brand_kits(id) ON DELETE CASCADE,
+      campaign_id UUID NOT NULL REFERENCES campaign_briefs(id) ON DELETE CASCADE,
+      scorecard_id UUID REFERENCES scorecards(id) ON DELETE SET NULL,
+      platform TEXT NOT NULL,
+      status TEXT NOT NULL,
+      external_id TEXT,
+      external_url TEXT,
+      metadata JSONB,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`
 ];
 

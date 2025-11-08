@@ -76,6 +76,7 @@ if documents are not present, let's create them.
 - Campaign briefs require product imagery uploads; Veo generation endpoints live under `/api/generation`
 - Generated videos are saved to `uploads/generated` for critique and static serving
 - Run `npm run test` (Vitest) before pushes; add cases when adding prompts or aggregation logic
+- Avoid `any` in TypeScript; prefer precise types or `unknown` + validation when inference fails
 
 ### When in Doubt
 

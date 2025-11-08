@@ -1,105 +1,73 @@
 /**
- * @file Wraps Veo generation calls and handles asset preparation/decoding.
+ * @file Wraps Veo generation calls and handles asset preparation/decoding using Google Gen AI SDK.
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { lookup as mimeLookup } from 'mime-types';
+import { GoogleGenAI } from '@google/genai';
 import { buildVeoPrompt, type GenerationContext } from '../../prompt/generationTemplate.js';
-import { googleClient } from '../../config/googleClient.js';
+import { env } from '../../config/env.js';
 import { ensureUploadsDir } from '../../utils/uploads.js';
-
-interface InlineDataAsset {
-  inlineData: {
-    data: string;
-    mimeType: string;
-  };
-}
-
-interface VeoResponse {
-  video?: InlineDataAsset;
-  videoUri?: string;
-  jobId?: string;
-  [key: string]: unknown;
-}
-
-const readAssetAsInline = async (assetPath: string): Promise<InlineDataAsset> => {
-  const absolutePath = path.resolve(process.cwd(), assetPath);
-  const buffer = await fs.readFile(absolutePath);
-  const mimeType = mimeLookup(absolutePath) || 'application/octet-stream';
-  return {
-    inlineData: {
-      data: buffer.toString('base64'),
-      mimeType: typeof mimeType === 'string' ? mimeType : 'application/octet-stream',
-    },
-  };
-};
-
-const decodeVideoResponse = async (response: VeoResponse): Promise<{ videoPath: string; jobId?: string }> => {
-  const uploadsDir = ensureUploadsDir();
-  const generatedDir = path.join(uploadsDir, 'generated');
-  await fs.mkdir(generatedDir, { recursive: true });
-  const filename = `veo-${Date.now()}-${Math.round(Math.random() * 1e9)}.mp4`;
-  const targetPath = path.join(generatedDir, filename);
-
-  if (response.video?.inlineData?.data) {
-    const buffer = Buffer.from(response.video.inlineData.data, 'base64');
-    await fs.writeFile(targetPath, buffer);
-    return { videoPath: targetPath, jobId: response.jobId };
-  }
-
-  if (response.videoUri) {
-    const res = await fetch(response.videoUri);
-    if (!res.ok) {
-      throw new Error(`Failed to download Veo video: ${res.status}`);
-    }
-    const arrayBuffer = await res.arrayBuffer();
-    await fs.writeFile(targetPath, Buffer.from(arrayBuffer));
-    return { videoPath: targetPath, jobId: response.jobId };
-  }
-
-  throw new Error('Veo response did not include video data');
-};
 
 export interface GenerateVideoResult {
   videoPath: string;
-  jobId?: string;
-  rawResponse: VeoResponse;
+  operationName: string;
+  done: boolean;
 }
 
 export const generateVideo = async (
   context: GenerationContext,
 ): Promise<GenerateVideoResult> => {
+  const ai = new GoogleGenAI({ apiKey: env.veoApiKey });
   const prompt = buildVeoPrompt(context);
 
-  const assets: InlineDataAsset[] = [];
-  if (context.brand.logoPath) {
-    assets.push(await readAssetAsInline(context.brand.logoPath));
-  }
-  assets.push(await readAssetAsInline(context.campaign.productImagePath));
-  if (context.campaign.additionalAssets?.length) {
-    const extras = await Promise.all(
-      context.campaign.additionalAssets.map((asset) => readAssetAsInline(asset)),
-    );
-    assets.push(...extras);
+  console.log('\n=== VEO GENERATION REQUEST ===');
+  console.log(`Iteration: ${context.iteration}`);
+  console.log(`Prompt:\n${prompt}`);
+  console.log('==============================\n');
+
+  // Initiate video generation
+  let operation = await ai.models.generateVideos({
+    model: 'veo-3.1-generate-preview',
+    prompt: prompt,
+  });
+
+  console.log(`Veo operation started: ${operation.name}`);
+
+  // Poll until the video is ready
+  while (!operation.done) {
+    console.log('Waiting for video generation to complete...');
+    await new Promise((resolve) => setTimeout(resolve, 10000)); // 10s poll interval
+    operation = await ai.operations.getVideosOperation({
+      operation: operation,
+    });
   }
 
-  const payload = {
-    prompt,
-    assets,
-    videoConfig: {
-      durationSeconds: 8,
-      aspectRatio: '9:16',
-      outputFormat: 'mp4',
-    },
-  };
+  console.log('Video generation complete!');
 
-  const response = await googleClient.callVeo<VeoResponse>(payload);
-  const decoded = await decodeVideoResponse(response);
+  // Validate response structure
+  if (!operation.response?.generatedVideos?.[0]?.video) {
+    throw new Error('Veo operation completed but no video was generated');
+  }
+
+  // Download the generated video
+  const uploadsDir = ensureUploadsDir();
+  const generatedDir = path.join(uploadsDir, 'generated');
+  await fs.mkdir(generatedDir, { recursive: true });
+  
+  const filename = `veo-${Date.now()}-${Math.round(Math.random() * 1e9)}.mp4`;
+  const targetPath = path.join(generatedDir, filename);
+
+  await ai.files.download({
+    file: operation.response.generatedVideos[0].video,
+    downloadPath: targetPath,
+  });
+
+  console.log(`Generated video saved to ${targetPath}`);
 
   return {
-    videoPath: decoded.videoPath,
-    jobId: decoded.jobId,
-    rawResponse: response,
+    videoPath: targetPath,
+    operationName: operation.name ?? 'unknown',
+    done: operation.done ?? false,
   };
 };

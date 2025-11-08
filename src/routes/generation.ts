@@ -45,14 +45,13 @@ const resolveContext = async (
 
 const mapResult = (result: Awaited<ReturnType<typeof generateOnly>>) => ({
   iteration: result.iteration,
-  jobId: result.jobId,
+  operationName: result.operationName,
   videoPath: result.videoPath,
   videoUrl:
     result.scorecardRecord?.videoUrl ?? buildPublicUploadUrl(result.videoPath),
   scorecard: result.scorecard ?? null,
   scorecardRecord: result.scorecardRecord ?? null,
   passed: result.passed,
-  rawGeneration: result.rawGeneration,
 });
 
 const mapLoopResults = (

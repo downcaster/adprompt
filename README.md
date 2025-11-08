@@ -23,12 +23,52 @@ BrandAI is a hackathon prototype that automates quality control for AI-generated
 
 ### Prerequisites
 
-- Node.js 20+
-- Postgres instance
-- Google AI Studio API key with access to Gemini 2.5 Flash and Veo endpoints
+- **Docker & Docker Compose** (recommended) OR
+- Node.js 20+ with Postgres instance (local setup)
+- Google AI Studio API keys with access to Gemini 2.5 Flash and Veo endpoints
 - ffmpeg (bundled via `@ffmpeg-installer/ffmpeg`)
 
-### Installation
+### Quick Start with Docker (Recommended)
+
+1. **Clone and setup**:
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your GEMINI_API_KEY and VEO_API_KEY
+   ```
+
+2. **Start all services**:
+   ```bash
+   make dev
+   # OR: docker-compose up -d
+   ```
+
+3. **Access the application**:
+   - Frontend Dashboard: http://localhost:3001
+   - Backend API: http://localhost:3000
+   - PostgreSQL: localhost:5432
+
+4. **View logs**:
+   ```bash
+   make logs        # All services
+   make backend     # Backend only
+   make frontend    # Frontend only
+   ```
+
+5. **Stop services**:
+   ```bash
+   make down
+   ```
+
+See [DOCKER.md](./DOCKER.md) for complete Docker documentation.
+
+### Local Development (Without Docker)
+
+**Prerequisites:**
+- Node.js 20+
+- PostgreSQL running on localhost:5432
+- Google AI Studio API keys
+
+**Installation:**
 
 ```bash
 npm install
@@ -36,30 +76,31 @@ cp .env.example .env
 ```
 
 Edit `.env` with your credentials:
-
 - `GEMINI_API_KEY`
 - `VEO_API_KEY`
-- `DATABASE_URL`
-- Optional overrides for `UPLOAD_DIR` (default `storage/uploads`), `TEMP_DIR` (default `storage/tmp`), `DEFAULT_REGEN_LIMIT`
+- `DATABASE_URL` (e.g., `postgresql://user:pass@localhost:5432/adprompt`)
+- Optional: `DEFAULT_REGEN_LIMIT` (default: 5)
 
-### Database Setup
+**Database Setup:**
 
-The server bootstraps tables automatically. To initialize manually:
+The server bootstraps tables automatically on first run. Tables created: `users`, `brand_kits`, `campaign_briefs`, `scorecards`, `publish_logs`.
 
-```bash
-npm run build
-npm run start
-```
+**Running Services:**
 
-Tables created: `users`, `brand_kits`, `campaign_briefs`, `scorecards`, `publish_logs`.
-
-### Development
-
-Run the dev server with hot reload:
-
+Backend (Express API):
 ```bash
 npm run dev
 ```
+
+Frontend (Next.js):
+```bash
+cd apps/web
+npm run dev
+```
+
+Backend runs on port 3000, Frontend on port 3001.
+
+### API Endpoints
 
 Available endpoints (prefix `/api`):
 
@@ -78,19 +119,20 @@ Available endpoints (prefix `/api`):
 
 ### Testing
 
-Run the unit test suite with:
-
+**With Docker:**
 ```bash
-npm run test
+make test        # Unit tests only
+make test-api    # API tests (uses real API keys, consumes quota)
 ```
 
-Watch mode is available during development:
-
+**Without Docker:**
 ```bash
-npm run test:watch
+npm test              # Unit tests only
+npm run test:api      # API tests (uses real API keys, consumes quota)
+npm run test:watch    # Unit tests in watch mode
 ```
 
-Current coverage focuses on score aggregation and prompt builders; extend with integration tests as the Gemini/Veo flows stabilize.
+**Note**: API tests make real calls to Google AI Studio and are excluded from `npm test` to prevent accidental quota consumption.
 
 ### Sample Scripts
 

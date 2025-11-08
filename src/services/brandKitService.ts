@@ -3,7 +3,7 @@
  */
 
 import path from 'node:path';
-import Vibrant, { type Palette, type Swatch } from 'node-vibrant';
+import * as Vibrant from 'node-vibrant/node';
 import colorName from 'color-name';
 import { v4 as uuidv4 } from 'uuid';
 import type { Request } from 'express';

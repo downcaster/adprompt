@@ -1,0 +1,29 @@
+version: '3.9'
+
+# Production docker-compose override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  postgres:
+    environment:
+      # Use strong password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+
+  backend:
+    build:
+      target: production
+    environment:
+      NODE_ENV: production
+    command: npm start
+    volumes:
+      # Only mount storage in production, not source code
+      - storage_data:/app/storage
+
+  frontend:
+    build:
+      target: production
+    environment:
+      NODE_ENV: production
+    volumes: []
+    command: npm start
+

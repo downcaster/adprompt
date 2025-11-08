@@ -1,0 +1,37 @@
+# Frontend Dockerfile (Next.js)
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+
+# Copy root package files for workspace
+COPY package*.json ./
+COPY apps/web/package*.json ./apps/web/
+
+# Install dependencies
+RUN npm ci && \
+    cd apps/web && \
+    npm ci
+
+# Development image
+FROM base AS dev
+WORKDIR /app
+
+# Copy node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+
+# Copy package files
+COPY package*.json ./
+COPY apps/web/package*.json ./apps/web/
+
+# Expose Next.js port
+EXPOSE 3001
+
+# Set working directory to web app
+WORKDIR /app/apps/web
+
+# Start Next.js dev server
+CMD ["npm", "run", "dev"]
+

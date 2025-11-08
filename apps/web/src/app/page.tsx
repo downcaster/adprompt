@@ -755,6 +755,21 @@ function DashboardPage() {
                       Overall {latestScorecard.overallStatus.toUpperCase()}
                     </Badge>
                   </div>
+                  
+                  {/* Latest Video Player */}
+                  <div className="my-3">
+                    <video 
+                      src={latestScorecard.videoUrl.startsWith('http') ? latestScorecard.videoUrl : `http://localhost:3000${latestScorecard.videoUrl}`} 
+                      controls 
+                      autoPlay
+                      loop
+                      className="w-full rounded-md border"
+                      style={{ maxHeight: '400px' }}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+
                   <Separator className="my-3" />
                   <div className="grid gap-3 md:grid-cols-2">
                     {latestScorecard.scorecard.scores.map((score) => (
@@ -806,6 +821,29 @@ function DashboardPage() {
                               {record.overallStatus.toUpperCase()}
                             </Badge>
                           </div>
+                          
+                          {/* Video Player */}
+                          <div className="mt-3 mb-3">
+                            <video 
+                              src={record.videoUrl.startsWith('http') ? record.videoUrl : `http://localhost:3000${record.videoUrl}`} 
+                              controls 
+                              className="w-full rounded-md border"
+                              style={{ maxHeight: '300px' }}
+                            >
+                              Your browser does not support the video tag.
+                            </video>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              <a 
+                                href={record.videoUrl.startsWith('http') ? record.videoUrl : `http://localhost:3000${record.videoUrl}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="underline hover:text-foreground"
+                              >
+                                Open video in new tab
+                              </a>
+                            </p>
+                          </div>
+
                           <div className="mt-3 grid gap-2 md:grid-cols-2">
                             {record.scorecard.scores.map((score) => (
                               <div key={`${record.id}-${score.dimension}`} className="rounded-md border px-3 py-2">

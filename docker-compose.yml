@@ -1,0 +1,110 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: adprompt-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: adprompt
+      POSTGRES_PASSWORD: adprompt
+      POSTGRES_DB: adprompt
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U adprompt']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - adprompt-network
+
+  # Express Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      target: dev
+    container_name: adprompt-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      PUBLIC_API_URL: http://localhost:3000
+      DATABASE_URL: postgresql://adprompt:adprompt@postgres:5432/adprompt
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      VEO_API_KEY: ${VEO_API_KEY}
+      DEFAULT_REGEN_LIMIT: 5
+    ports:
+      - '3000:3000'
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./scripts:/app/scripts
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./vitest.config.ts:/app/vitest.config.ts
+      - ./vitest.api.config.ts:/app/vitest.api.config.ts
+      # Named volume for storage (persisted across restarts)
+      - storage_data:/app/storage
+      # Exclude node_modules from mount (use image's node_modules)
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - adprompt-network
+    command: npm run dev
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      target: dev
+    container_name: adprompt-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3000/api
+      NEXT_PUBLIC_DEMO_USER_ID: 00000000-0000-0000-0000-000000000001
+      NEXT_PUBLIC_DEMO_USER_EMAIL: demo@brandai.local
+      # Turbopack for faster dev builds
+      TURBOPACK: 1
+    ports:
+      - '3001:3001'
+    volumes:
+      # Mount source code for hot reload
+      - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/public:/app/apps/web/public
+      - ./apps/web/package.json:/app/apps/web/package.json
+      - ./apps/web/next.config.ts:/app/apps/web/next.config.ts
+      - ./apps/web/tailwind.config.ts:/app/apps/web/tailwind.config.ts
+      - ./apps/web/tsconfig.json:/app/apps/web/tsconfig.json
+      - ./apps/web/components.json:/app/apps/web/components.json
+      - ./apps/web/postcss.config.mjs:/app/apps/web/postcss.config.mjs
+      # Exclude node_modules and .next from mount
+      - /app/node_modules
+      - /app/apps/web/node_modules
+      - /app/apps/web/.next
+    depends_on:
+      - backend
+    networks:
+      - adprompt-network
+
+volumes:
+  # Persisted database data
+  postgres_data:
+    driver: local
+  # Persisted uploads and generated videos
+  storage_data:
+    driver: local
+
+networks:
+  adprompt-network:
+    driver: bridge
+

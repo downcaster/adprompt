@@ -5,7 +5,7 @@
 import { googleClient } from '../../config/googleClient.js';
 import { agentResponseSchema, type AgentResponse } from './scoreAggregator.js';
 
-const AGENT_MODEL = 'gemini-2.5-flash-exp';
+const AGENT_MODEL = 'gemini-2.5-flash';
 
 export interface ImagePart {
   inlineData: {
@@ -75,4 +75,62 @@ export const invokeAgent = async (
     agent: AGENT_MODEL,
     output: parsed,
   });
+};
+
+/**
+ * Convenience wrappers for individual specialist agents (for testing)
+ */
+import { buildAgentPrompt, type CritiqueContext } from '../../prompt/critiqueTemplate.js';
+import { defaultSpecialistConfigs } from './agentConfigs.js';
+
+export const runBrandFitAgent = async (context: CritiqueContext) => {
+  const config = defaultSpecialistConfigs.find(c => c.dimension === 'BrandFit');
+  if (!config) throw new Error('BrandFit config not found');
+  
+  const prompt = buildAgentPrompt(context, {
+    systemInstruction: config.systemInstruction,
+    dimension: config.dimension,
+  });
+  
+  const response = await invokeAgent({ prompt });
+  return response.output;
+};
+
+export const runVisualQualityAgent = async (context: CritiqueContext) => {
+  const config = defaultSpecialistConfigs.find(c => c.dimension === 'VisualQuality');
+  if (!config) throw new Error('VisualQuality config not found');
+  
+  const prompt = buildAgentPrompt(context, {
+    systemInstruction: config.systemInstruction,
+    dimension: config.dimension,
+  });
+  
+  const response = await invokeAgent({ prompt });
+  return response.output;
+};
+
+export const runSafetyAgent = async (context: CritiqueContext) => {
+  const config = defaultSpecialistConfigs.find(c => c.dimension === 'Safety');
+  if (!config) throw new Error('Safety config not found');
+  
+  const prompt = buildAgentPrompt(context, {
+    systemInstruction: config.systemInstruction,
+    dimension: config.dimension,
+  });
+  
+  const response = await invokeAgent({ prompt });
+  return response.output;
+};
+
+export const runClarityAgent = async (context: CritiqueContext) => {
+  const config = defaultSpecialistConfigs.find(c => c.dimension === 'Clarity');
+  if (!config) throw new Error('Clarity config not found');
+  
+  const prompt = buildAgentPrompt(context, {
+    systemInstruction: config.systemInstruction,
+    dimension: config.dimension,
+  });
+  
+  const response = await invokeAgent({ prompt });
+  return response.output;
 };

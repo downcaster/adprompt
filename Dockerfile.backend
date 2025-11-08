@@ -1,0 +1,33 @@
+# Backend Dockerfile (Express API)
+FROM node:20-alpine AS base
+
+# Install ffmpeg for video frame extraction
+RUN apk add --no-cache ffmpeg
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package*.json ./
+RUN npm ci
+
+# Development image
+FROM base AS dev
+WORKDIR /app
+
+# Ensure ffmpeg is available in dev stage
+RUN apk add --no-cache ffmpeg
+
+# Copy node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy package files
+COPY package*.json ./
+
+# Expose port
+EXPOSE 3000
+
+# Start tsx in watch mode for hot reload
+CMD ["npm", "run", "dev"]
+

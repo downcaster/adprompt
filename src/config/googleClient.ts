@@ -52,6 +52,7 @@ export class GoogleAIClient {
   }
 
   /**
+   * @deprecated Use GoogleGenAI SDK from @google/genai for Veo instead.
    * Calls Veo video generation endpoint with the supplied prompt payload.
    */
   public async callVeo<TResponse>(payload: unknown): Promise<TResponse> {

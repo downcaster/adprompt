@@ -1,0 +1,51 @@
+# Dependencies
+node_modules
+**/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist
+.next
+out
+build
+
+# Environment files
+.env
+.env*.local
+
+# Storage and uploads (will be in volumes)
+storage
+uploads
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage
+.nyc_output
+
+# Logs
+*.log
+logs
+
+# Misc
+.cache
+*.tgz
+.npm
+.eslintcache
+

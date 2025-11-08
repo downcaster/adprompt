@@ -20,7 +20,7 @@ const envSchema = z.object({
       return parsed;
     }),
   GEMINI_API_KEY: z.string().min(1, { message: 'GEMINI_API_KEY is required' }),
-  VEO_API_KEY: z.string().min(1, { message: 'VEO_API_KEY is required' }),
+  VEO_API_KEY: z.string().min(1, { message: 'VEO_API_KEY is required' }).optional().default(''),
   DATABASE_URL: z.string().min(1, { message: 'DATABASE_URL is required' }),
   UPLOAD_DIR: z.string().default('storage/uploads'),
   TEMP_DIR: z.string().default('storage/tmp'),
@@ -52,7 +52,8 @@ export const env = {
   nodeEnv: parsed.data.NODE_ENV,
   port: parsed.data.PORT,
   geminiApiKey: parsed.data.GEMINI_API_KEY,
-  veoApiKey: parsed.data.VEO_API_KEY,
+  // VEO_API_KEY defaults to GEMINI_API_KEY if not provided (both use generativelanguage.googleapis.com)
+  veoApiKey: parsed.data.VEO_API_KEY || parsed.data.GEMINI_API_KEY,
   databaseUrl: parsed.data.DATABASE_URL,
   uploadDir: parsed.data.UPLOAD_DIR,
   tempDir: parsed.data.TEMP_DIR,

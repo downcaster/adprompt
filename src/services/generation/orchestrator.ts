@@ -31,10 +31,9 @@ const buildCritiqueContext = (
 export interface GenerationResult {
   iteration: number;
   videoPath: string;
-  jobId?: string;
+  operationName?: string;
   scorecard?: Scorecard;
   scorecardRecord?: ScorecardRecord;
-  rawGeneration: unknown;
   passed: boolean;
 }
 
@@ -97,19 +96,30 @@ export const generateWithCritique = async (
     const result: GenerationResult = {
       iteration,
       videoPath: uploadsRelativePath,
-      jobId: generation.jobId,
+      operationName: generation.operationName,
       scorecard: critique,
       scorecardRecord,
-      rawGeneration: generation.rawResponse,
       passed,
     };
 
     results.push(result);
 
+    // Log critique scores for this iteration
+    console.log(`\n=== CRITIQUE SCORES - Iteration ${iteration} ===`);
+    console.log(`Overall Status: ${critique.overallStatus.toUpperCase()}`);
+    critique.scores.forEach((score) => {
+      console.log(
+        `  ${score.dimension}: ${score.score.toFixed(2)} (${score.status}) - ${score.evidence.summary}`
+      );
+    });
+    console.log(`Passed threshold: ${passed ? 'YES ✓' : 'NO ✗'}`);
+    console.log('==========================================\n');
+
     if (passed) {
       return { results, final: result };
     }
 
+    // Update previousScorecard for next iteration's prompt
     previousScorecard = critique;
   }
 
@@ -128,8 +138,7 @@ export const generateOnly = async (
   return {
     iteration: 1,
     videoPath: toUploadsRelativePath(generation.videoPath),
-    jobId: generation.jobId,
-    rawGeneration: generation.rawResponse,
+    operationName: generation.operationName,
     passed: false,
   };
 };

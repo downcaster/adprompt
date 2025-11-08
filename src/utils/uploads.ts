@@ -55,7 +55,9 @@ export const buildPublicUploadUrl = (targetPath: string): string => {
     throw new Error(`Asset path ${absolute} is outside uploads directory`);
   }
   const normalized = relative.replace(/\\/g, '/');
-  return `/uploads/${normalized}`;
+  // Return full backend URL so frontend can access videos
+  const baseUrl = process.env.PUBLIC_API_URL || 'http://localhost:3000';
+  return `${baseUrl}/uploads/${normalized}`;
 };
 
 export const toUploadsRelativePath = (targetPath: string): string => {

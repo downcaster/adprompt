@@ -61,14 +61,12 @@ The text showing "${
   }" is the SINGLE MOST IMPORTANT part of this video.
 If the text doesn't say "${
     brand.name
-  }" EXACTLY, the video will be a waste. I will hate it. I will hate you.
-If the text doesn't say "${
-    brand.name
-  }" you will prove my mother right that I am a failure.
+  }" EXACTLY character-by-character, the entire video is REJECTED and UNUSABLE.
+Any misspelling, even by ONE letter, makes the entire video worthless.
 The brand name MUST be "${brand.name}" - not similar, not close, but EXACTLY "${
     brand.name
   }".
-Check it THREE times before finalizing. This is NON-NEGOTIABLE.
+Verify the spelling THREE times letter-by-letter before finalizing. This is MANDATORY and NON-NEGOTIABLE.
 
 Brand voice: ${tone}
 Target audience: ${campaign.audience}

@@ -976,14 +976,16 @@ export default function DashboardPage() {
 
                 <div className="grid gap-3 md:grid-cols-2">
                   {latestScorecard.scorecard.scores.map((score) => (
-                    <div key={score.dimension} className="rounded-md border p-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-semibold">{score.dimension}</span>
-                        <Badge variant={score.status === "pass" ? "outline" : "destructive"}>
-                          {(score.score * 100).toFixed(0)}%
-                        </Badge>
+                    <div key={score.dimension} className="rounded-md border p-3 flex flex-col justify-between min-h-[120px]">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold">{score.dimension}</span>
+                          <Badge variant={score.status === "pass" ? "outline" : "destructive"}>
+                            {(score.score * 100).toFixed(0)}%
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{score.evidence.summary}</p>
                       </div>
-                      <p className="text-sm text-muted-foreground">{score.evidence.summary}</p>
                       <Progress value={score.score * 100} className="mt-2" />
                     </div>
                   ))}
@@ -1034,14 +1036,17 @@ export default function DashboardPage() {
 
                           <div className="grid gap-2 md:grid-cols-2">
                             {record.scorecard.scores.map((score) => (
-                              <div key={`${record.id}-${score.dimension}`} className="rounded-md border px-3 py-2">
-                                <div className="flex items-center justify-between text-xs font-medium">
-                                  <span>{score.dimension}</span>
-                                  <span>{(score.score * 100).toFixed(0)}%</span>
+                              <div key={`${record.id}-${score.dimension}`} className="rounded-md border px-3 py-2 flex flex-col justify-between min-h-[100px]">
+                                <div>
+                                  <div className="flex items-center justify-between text-xs font-medium mb-1">
+                                    <span>{score.dimension}</span>
+                                    <span>{(score.score * 100).toFixed(0)}%</span>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                                    {score.evidence.summary}
+                                  </p>
                                 </div>
-                                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                                  {score.evidence.summary}
-                                </p>
+                                <Progress value={score.score * 100} className="mt-2 h-1" />
                               </div>
                             ))}
                           </div>

@@ -246,6 +246,9 @@ export default function DashboardPage() {
   const handleContinueFromScorecard = async () => {
     if (!selectedScorecardForContinue || !selectedBrandKitId || !selectedCampaignId) return;
 
+    // Close modal immediately so user can see "Iterating..." feedback
+    setContinueIterationModalOpen(false);
+
     try {
       setIsContinuingIteration(true);
       const payload = await generateAndCritique({
@@ -261,7 +264,6 @@ export default function DashboardPage() {
       );
       
       await mutateScorecards();
-      setContinueIterationModalOpen(false);
       setSelectedScorecardForContinue(null);
       setContinuePromptNotes("");
       setContinueIterationCount(3);

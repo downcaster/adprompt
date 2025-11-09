@@ -456,7 +456,7 @@ export default function DashboardPage() {
           <div className="grid gap-4 md:grid-cols-2">
             {/* Brand Kit Tile */}
             {selectedBrandKit ? (
-              <Card className="border-2 border-primary">
+              <Card className="border-2 border-primary flex flex-col">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -466,7 +466,7 @@ export default function DashboardPage() {
                     <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="flex flex-col flex-1 justify-between gap-3">
                   <div className="rounded-lg bg-primary/5 p-3 space-y-1">
                     <p className="font-semibold text-base">{selectedBrandKit.name}</p>
                     <p className="text-sm text-muted-foreground line-clamp-2">
@@ -487,7 +487,7 @@ export default function DashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full"
+                    className="w-full mt-auto"
                     onClick={() => setSelectedBrandKitId(null)}
                   >
                     Change Brand Kit
@@ -585,7 +585,7 @@ export default function DashboardPage() {
 
             {/* Campaign Tile */}
             {selectedCampaign ? (
-              <Card className="border-2 border-primary">
+              <Card className="border-2 border-primary flex flex-col">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -595,7 +595,7 @@ export default function DashboardPage() {
                     <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="flex flex-col flex-1 justify-between gap-3">
                   <div className="rounded-lg bg-primary/5 p-3 space-y-2">
                     <p className="font-semibold text-base line-clamp-2">{selectedCampaign.productDescription}</p>
                     <div className="space-y-1">
@@ -610,7 +610,7 @@ export default function DashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full"
+                    className="w-full mt-auto"
                     onClick={() => setSelectedCampaignId(null)}
                   >
                     Change Campaign

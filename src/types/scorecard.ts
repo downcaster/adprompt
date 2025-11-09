@@ -2,7 +2,7 @@
  * @file Type definitions for scorecards, agent outputs, and brand kits.
  */
 
-export type CritiqueDimension = 'BrandFit' | 'VisualQuality' | 'Safety' | 'Clarity' | 'TextAccuracy' | 'ProductPresence';
+export type CritiqueDimension = 'BrandFit' | 'VisualQuality' | 'Safety' | 'Clarity';
 
 export type AgentStatus = 'pass' | 'fail';
 

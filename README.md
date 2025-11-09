@@ -41,16 +41,14 @@ ADPrompt is a hackathon prototype that automates quality control for AI-generate
 ### AI Models
 
 - **Veo 3.1 (Generate Preview)** - Text-to-video generation (5-10 second ads)
-- **Gemini 2.5 Flash** - Powers 6 specialist critique agents
+- **Gemini 2.5 Flash** - Powers 4 specialist critique agents
 
 ### Critique Agents
 
-1. **BrandFit Agent** - Logo correctness, palette adherence, tone alignment, prohibited phrases
-2. **VisualQuality Agent** - Sharpness, lighting, composition, no glitches/watermarks
-3. **Safety Agent** - Harmful content, bias, misleading claims, copyright issues
-4. **Clarity Agent** - Product understanding, CTA clarity, message alignment
-5. **TextAccuracy Agent** - Brand name spelling verification, typo detection, text correctness (character-by-character validation)
-6. **ProductPresence Agent** - Ensures the actual product is physically visible in the video (not just implied or abstract)
+1. **BrandFit Agent** - Logo correctness, palette adherence, tone alignment, prohibited phrases, brand name spelling
+2. **VisualQuality Agent** - Sharpness, lighting, composition, no glitches/watermarks, product visibility
+3. **Safety Agent** - Harmful content, bias, misleading claims, copyright issues (does NOT check brand/product)
+4. **Clarity Agent** - Product understanding, CTA clarity, message alignment, text accuracy
 
 ### Video Processing
 

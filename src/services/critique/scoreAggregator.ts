@@ -6,7 +6,7 @@ import { z } from 'zod';
 import type { AgentScore, Scorecard } from '../../types/scorecard.js';
 
 export const agentScoreSchema = z.object({
-  dimension: z.enum(['BrandFit', 'VisualQuality', 'Safety', 'Clarity', 'TextAccuracy', 'ProductPresence']),
+  dimension: z.enum(['BrandFit', 'VisualQuality', 'Safety', 'Clarity']),
   score: z.number().min(0).max(1),
   status: z.enum(['pass', 'fail']),
   evidence: z.object({

@@ -134,29 +134,3 @@ export const runClarityAgent = async (context: CritiqueContext) => {
   const response = await invokeAgent({ prompt });
   return response.output;
 };
-
-export const runTextAccuracyAgent = async (context: CritiqueContext) => {
-  const config = defaultSpecialistConfigs.find(c => c.dimension === 'TextAccuracy');
-  if (!config) throw new Error('TextAccuracy config not found');
-  
-  const prompt = buildAgentPrompt(context, {
-    systemInstruction: config.systemInstruction,
-    dimension: config.dimension,
-  });
-  
-  const response = await invokeAgent({ prompt });
-  return response.output;
-};
-
-export const runProductPresenceAgent = async (context: CritiqueContext) => {
-  const config = defaultSpecialistConfigs.find(c => c.dimension === 'ProductPresence');
-  if (!config) throw new Error('ProductPresence config not found');
-  
-  const prompt = buildAgentPrompt(context, {
-    systemInstruction: config.systemInstruction,
-    dimension: config.dimension,
-  });
-  
-  const response = await invokeAgent({ prompt });
-  return response.output;
-};

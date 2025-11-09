@@ -486,8 +486,7 @@ export default function DashboardPage() {
                   </div>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="w-full mt-auto"
+                    className="w-full mt-auto h-10"
                     onClick={() => setSelectedBrandKitId(null)}
                   >
                     Change Brand Kit
@@ -553,7 +552,7 @@ export default function DashboardPage() {
                   ) : (
                     <Dialog open={brandKitModalOpen} onOpenChange={setBrandKitModalOpen}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full h-24">
+                        <Button variant="outline" className="w-full h-20">
                           <Plus className="mr-2 h-5 w-5" /> Create Brand Kit
                         </Button>
                       </DialogTrigger>
@@ -609,8 +608,7 @@ export default function DashboardPage() {
                   </div>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="w-full mt-auto"
+                    className="w-full mt-auto h-10"
                     onClick={() => setSelectedCampaignId(null)}
                   >
                     Change Campaign
@@ -678,7 +676,7 @@ export default function DashboardPage() {
                       <DialogTrigger asChild>
                         <Button 
                           variant="outline" 
-                          className="w-full h-24"
+                          className="w-full h-20"
                           disabled={!selectedBrandKitId}
                         >
                           <Plus className="mr-2 h-5 w-5" /> Create Campaign

@@ -179,7 +179,7 @@ export default function DashboardPage() {
     }
   };
 
-  const canGenerate = selectedBrandKitId && selectedCampaignId && !isDrafting && !isGenerating;
+  const canGenerate = !!(selectedBrandKitId && selectedCampaignId && !isDrafting && !isGenerating);
 
   const handleContinueFromScorecard = async () => {
     if (!selectedScorecardForContinue || !selectedBrandKitId || !selectedCampaignId) return;

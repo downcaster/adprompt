@@ -98,7 +98,7 @@ export function GenerationControls({
                 <div className="text-left">
                   <div className="font-semibold">Generate & Critique</div>
                   <div className="text-xs font-normal text-muted-foreground">
-                    Full workflow with feedback loop
+                    Full workflow with feedback loop (~1min)
                   </div>
                 </div>
               </>

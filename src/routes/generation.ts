@@ -5,6 +5,7 @@
 import express from "express";
 import { getBrandKitById } from "../db/brandKits.js";
 import { getCampaignById } from "../db/campaigns.js";
+import { getScorecardById } from "../db/scorecards.js";
 import {
   generateOnly,
   generateWithCritique,
@@ -19,6 +20,7 @@ interface GenerateRequestBody {
   caption?: string;
   regenLimit?: number;
   scoreThreshold?: number;
+  scorecardId?: string;
 }
 
 const resolveContext = async (
@@ -99,12 +101,23 @@ generationRouter.post(
     const body = request.body as GenerateRequestBody;
     const { brand, campaign } = await resolveContext(request, body);
 
+    // If scorecardId is provided, load that scorecard to continue from
+    let previousScorecard = undefined;
+    if (body.scorecardId) {
+      const scorecardRecord = await getScorecardById(body.scorecardId);
+      if (scorecardRecord) {
+        previousScorecard = scorecardRecord.scorecard;
+        console.log(`Continuing from scorecard iteration ${scorecardRecord.iteration}`);
+      }
+    }
+
     const results = await generateWithCritique({
       brand,
       campaign,
       caption: body.caption,
       regenLimit: body.regenLimit,
       scoreThreshold: body.scoreThreshold,
+      previousScorecard,
     });
 
     response.status(201).json(mapLoopResults(results));

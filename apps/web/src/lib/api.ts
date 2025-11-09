@@ -57,6 +57,7 @@ export interface GeneratePayload {
   caption?: string;
   regenLimit?: number;
   scoreThreshold?: number;
+  scorecardId?: string;
 }
 
 export interface GenerationResultPayload {

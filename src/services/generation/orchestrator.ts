@@ -43,6 +43,7 @@ export interface GenerateOptions {
   caption?: string;
   regenLimit?: number;
   scoreThreshold?: number;
+  previousScorecard?: Scorecard;
 }
 
 export const generateWithCritique = async (
@@ -59,7 +60,7 @@ export const generateWithCritique = async (
   );
 
   const results: GenerationResult[] = [];
-  let previousScorecard: Scorecard | undefined;
+  let previousScorecard: Scorecard | undefined = options.previousScorecard;
 
   for (let iteration = 1; iteration <= regenLimit; iteration += 1) {
     const generation = await generateVideo({

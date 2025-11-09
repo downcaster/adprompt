@@ -94,6 +94,11 @@ export default function DashboardPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [brandKitModalOpen, setBrandKitModalOpen] = useState(false);
   const [campaignModalOpen, setCampaignModalOpen] = useState(false);
+  const [continueIterationModalOpen, setContinueIterationModalOpen] = useState(false);
+  const [selectedScorecardForContinue, setSelectedScorecardForContinue] = useState<ScorecardRecord | null>(null);
+  const [continueIterationCount, setContinueIterationCount] = useState(3);
+  const [continuePromptNotes, setContinuePromptNotes] = useState("");
+  const [isContinuingIteration, setIsContinuingIteration] = useState(false);
   
   // File uploads
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -237,6 +242,43 @@ export default function DashboardPage() {
   };
 
   const canGenerate = selectedBrandKitId && selectedCampaignId && !isDrafting && !isGenerating;
+
+  const handleContinueFromScorecard = async () => {
+    if (!selectedScorecardForContinue || !selectedBrandKitId || !selectedCampaignId) return;
+
+    try {
+      setIsContinuingIteration(true);
+      const payload = await generateAndCritique({
+        brandKitId: selectedBrandKitId,
+        campaignId: selectedCampaignId,
+        caption: continuePromptNotes || caption,
+        regenLimit: continueIterationCount,
+        scorecardId: selectedScorecardForContinue.id,
+      });
+      
+      toast.success(
+        `Continued from iteration ${selectedScorecardForContinue.iteration}! ${payload.final.passed ? "✓ Passed" : "More refinement needed"}`
+      );
+      
+      await mutateScorecards();
+      setContinueIterationModalOpen(false);
+      setSelectedScorecardForContinue(null);
+      setContinuePromptNotes("");
+      setContinueIterationCount(3);
+    } catch (error) {
+      console.error(error);
+      toast.error((error as Error).message || "Failed to continue iteration");
+    } finally {
+      setIsContinuingIteration(false);
+    }
+  };
+
+  const openContinueIterationModal = (scorecard: ScorecardRecord) => {
+    setSelectedScorecardForContinue(scorecard);
+    setContinuePromptNotes("");
+    setContinueIterationCount(3);
+    setContinueIterationModalOpen(true);
+  };
 
   // Render brand kit form fields
   const renderBrandKitFormFields = (idSuffix: string = "") => (
@@ -809,6 +851,18 @@ export default function DashboardPage() {
                   <Badge variant={latestScorecard.overallStatus === "pass" ? "default" : "destructive"}>
                     {latestScorecard.overallStatus.toUpperCase()}
                   </Badge>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openContinueIterationModal(latestScorecard)}
+                    disabled={isContinuingIteration}
+                  >
+                    {isContinuingIteration ? (
+                      <><Loader2 className="mr-2 h-3 w-3 animate-spin" /> Iterating...</>
+                    ) : (
+                      "Continue Iterating"
+                    )}
+                  </Button>
                 </div>
                 
                 <video 
@@ -855,9 +909,19 @@ export default function DashboardPage() {
                                 {formatDistanceToNow(new Date(record.createdAt), { addSuffix: true })}
                               </p>
                             </div>
-                            <Badge variant={record.overallStatus === "pass" ? "default" : "destructive"}>
-                              {record.overallStatus.toUpperCase()}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openContinueIterationModal(record)}
+                                disabled={isContinuingIteration}
+                              >
+                                Continue
+                              </Button>
+                              <Badge variant={record.overallStatus === "pass" ? "default" : "destructive"}>
+                                {record.overallStatus.toUpperCase()}
+                              </Badge>
+                            </div>
                           </div>
                           
                           <video 
@@ -891,6 +955,86 @@ export default function DashboardPage() {
             )}
           </>
         )}
+
+        {/* Continue Iteration Modal */}
+        <Dialog open={continueIterationModalOpen} onOpenChange={setContinueIterationModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Continue Iterating from Iteration {selectedScorecardForContinue?.iteration}</DialogTitle>
+              <DialogDescription>
+                Create additional iterations building on this result's prompt and critique feedback.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="continue-iterations">Number of Additional Iterations</Label>
+                <Input
+                  id="continue-iterations"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={continueIterationCount}
+                  onChange={(e) => setContinueIterationCount(Number.parseInt(e.target.value, 10) || 3)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  How many more iterations to try (max 10)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="continue-prompt-notes">Additional Prompt Notes (Optional)</Label>
+                <Textarea
+                  id="continue-prompt-notes"
+                  placeholder="Add any specific instructions or refinements to guide the next iterations..."
+                  value={continuePromptNotes}
+                  onChange={(e) => setContinuePromptNotes(e.target.value)}
+                  className="min-h-[100px]"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leave empty to use the original caption. Add notes to refine the direction.
+                </p>
+              </div>
+
+              {selectedScorecardForContinue && (
+                <div className="rounded-lg bg-muted/50 p-3 space-y-2">
+                  <p className="text-sm font-semibold">This will continue from:</p>
+                  <ul className="text-xs space-y-1">
+                    <li>• Iteration {selectedScorecardForContinue.iteration} critique feedback</li>
+                    <li>• Overall status: <span className="font-medium">{selectedScorecardForContinue.overallStatus}</span></li>
+                    <li>• Scores will inform the next generation prompts</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setContinueIterationModalOpen(false);
+                  setSelectedScorecardForContinue(null);
+                  setContinuePromptNotes("");
+                }}
+                disabled={isContinuingIteration}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={handleContinueFromScorecard}
+                disabled={isContinuingIteration}
+              >
+                {isContinuingIteration ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iterating...</>
+                ) : (
+                  `Start ${continueIterationCount} Iteration${continueIterationCount > 1 ? 's' : ''}`
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

@@ -44,6 +44,7 @@ const bootstrapStatements = [
       scorecard JSONB NOT NULL,
       video_path TEXT NOT NULL,
       video_url TEXT NOT NULL,
+      caption TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`,
   `CREATE TABLE IF NOT EXISTS publish_logs (
@@ -67,4 +68,10 @@ export const ensureSchema = async (): Promise<void> => {
   for (const statement of bootstrapStatements) {
     await pool.query(statement);
   }
+  
+  // Add caption column to scorecards if it doesn't exist (migration)
+  await pool.query(`
+    ALTER TABLE scorecards 
+    ADD COLUMN IF NOT EXISTS caption TEXT
+  `);
 };

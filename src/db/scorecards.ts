@@ -25,6 +25,7 @@ const scorecardRowSchema = z.object({
   scorecard: scorecardSchema,
   video_path: z.string(),
   video_url: z.string(),
+  caption: z.string().nullable().optional(),
   created_at: z.instanceof(Date),
 });
 
@@ -39,6 +40,7 @@ const mapRowToScorecardRecord = (row: unknown): ScorecardRecord => {
     scorecard: parsed.scorecard,
     videoPath: parsed.video_path,
     videoUrl: parsed.video_url,
+    caption: parsed.caption ?? undefined,
     createdAt: parsed.created_at.toISOString(),
   };
 };
@@ -51,6 +53,7 @@ export interface CreateScorecardRecordInput {
   scorecard: Scorecard;
   videoPath: string;
   videoUrl: string;
+  caption?: string;
 }
 
 export const createScorecardRecord = async (
@@ -67,8 +70,9 @@ export const createScorecardRecord = async (
       overall_status,
       scorecard,
       video_path,
-      video_url
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      video_url,
+      caption
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING *`,
     [
       id,
@@ -79,6 +83,7 @@ export const createScorecardRecord = async (
       input.scorecard,
       input.videoPath,
       input.videoUrl,
+      input.caption ?? null,
     ],
   );
 

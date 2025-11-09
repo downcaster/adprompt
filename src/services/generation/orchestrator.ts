@@ -93,6 +93,7 @@ export const generateWithCritique = async (
       scorecard: critique,
       videoPath: uploadsRelativePath,
       videoUrl: videoPublicUrl,
+      caption: options.caption,
     });
 
     const result: GenerationResult = {

@@ -65,6 +65,7 @@ export interface ScorecardRecord {
   scorecard: Scorecard;
   videoPath: string;
   videoUrl: string;
+  caption?: string;
   createdAt: string;
 }
 

@@ -6,7 +6,7 @@ import path from 'node:path';
 import type { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { getBrandKitById } from '../db/brandKits.js';
-import { createCampaign } from '../db/campaigns.js';
+import { createCampaign, updateCampaign } from '../db/campaigns.js';
 import type { CampaignBrief } from '../types/scorecard.js';
 import { env } from '../config/env.js';
 
@@ -23,6 +23,7 @@ const parseToneKeywords = (raw?: string): string[] => {
 
 export const createCampaignBrief = async (
   request: Request,
+  campaignId?: string,
 ): Promise<CampaignBrief> => {
   const { brandKitId, productDescription, audience, callToAction, toneKeywords, regenLimit } =
     request.body ?? {};
@@ -58,8 +59,8 @@ export const createCampaignBrief = async (
 
   const additionalAssets = files?.assets?.map((file) => path.relative(process.cwd(), file.path));
 
-  const campaign = await createCampaign({
-    id: uuidv4(),
+  const campaignData = {
+    id: campaignId || uuidv4(),
     brandKitId,
     productDescription,
     audience,
@@ -68,7 +69,12 @@ export const createCampaignBrief = async (
     productImagePath: path.relative(process.cwd(), productImage.path),
     additionalAssets,
     regenLimit: regen,
-  });
+  };
 
-  return campaign;
+  // If campaignId is provided, update; otherwise create
+  if (campaignId) {
+    return await updateCampaign(campaignId, campaignData);
+  }
+
+  return await createCampaign(campaignData);
 };

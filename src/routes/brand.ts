@@ -61,3 +61,20 @@ brandRouter.post(
     }
   },
 );
+
+brandRouter.put(
+  '/:brandKitId',
+  upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'palette', maxCount: 1 },
+  ]),
+  async (request, response, next) => {
+    try {
+      const { brandKitId } = request.params;
+      const brandKit = await buildBrandKitPayload(request, brandKitId);
+      response.json(brandKit);
+    } catch (error) {
+      next(error);
+    }
+  },
+);

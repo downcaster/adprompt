@@ -7,7 +7,7 @@ import * as Vibrant from 'node-vibrant/node';
 import colorName from 'color-name';
 import { v4 as uuidv4 } from 'uuid';
 import type { Request } from 'express';
-import { createBrandKit } from '../db/brandKits.js';
+import { createBrandKit, updateBrandKit } from '../db/brandKits.js';
 import { ensureUser } from '../db/users.js';
 import type { BrandKit } from '../types/scorecard.js';
 
@@ -87,6 +87,7 @@ export interface CreateBrandKitRequest {
 
 export const buildBrandKitPayload = async (
   request: Request,
+  brandKitId?: string,
 ): Promise<BrandKit> => {
   const ownerId = request.headers['x-user-id'];
   const ownerEmail = request.headers['x-user-email'];
@@ -132,8 +133,8 @@ export const buildBrandKitPayload = async (
     new Set([...(manualHex ?? []), ...paletteHex]),
   );
 
-  return await createBrandKit({
-    id: uuidv4(),
+  const brandKitData = {
+    id: brandKitId || uuidv4(),
     ownerId,
     name: body.name,
     logoPath: logoFile?.path ? path.relative(process.cwd(), logoFile.path) : undefined,
@@ -145,5 +146,12 @@ export const buildBrandKitPayload = async (
     prohibitedPhrases: parseCommaSeparated(body.prohibitedPhrases),
     targetAudience: body.targetAudience,
     primaryCallToAction: body.primaryCallToAction,
-  });
+  };
+
+  // If brandKitId is provided, update; otherwise create
+  if (brandKitId) {
+    return await updateBrandKit(brandKitId, brandKitData);
+  }
+  
+  return await createBrandKit(brandKitData);
 };

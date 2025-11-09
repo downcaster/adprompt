@@ -68,3 +68,20 @@ campaignRouter.post(
     }
   },
 );
+
+campaignRouter.put(
+  '/:campaignId',
+  upload.fields([
+    { name: 'product', maxCount: 1 },
+    { name: 'assets', maxCount: 5 },
+  ]),
+  async (request, response, next) => {
+    try {
+      const { campaignId } = request.params;
+      const campaign = await createCampaignBrief(request, campaignId);
+      response.json(campaign);
+    } catch (error) {
+      next(error);
+    }
+  },
+);

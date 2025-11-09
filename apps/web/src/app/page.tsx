@@ -13,7 +13,8 @@ import {
   Video, 
   Zap,
   Plus,
-  CheckCircle2
+  CheckCircle2,
+  Pencil
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -37,6 +38,8 @@ import {
   listCampaigns,
   listPublishLogs,
   listScorecardsByCampaign,
+  updateBrandKit,
+  updateCampaign,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +97,10 @@ export default function DashboardPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [brandKitModalOpen, setBrandKitModalOpen] = useState(false);
   const [campaignModalOpen, setCampaignModalOpen] = useState(false);
+  const [editBrandKitModalOpen, setEditBrandKitModalOpen] = useState(false);
+  const [editCampaignModalOpen, setEditCampaignModalOpen] = useState(false);
+  const [editingBrandKit, setEditingBrandKit] = useState<BrandKit | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState<CampaignBrief | null>(null);
   const [continueIterationModalOpen, setContinueIterationModalOpen] = useState(false);
   const [selectedScorecardForContinue, setSelectedScorecardForContinue] = useState<ScorecardRecord | null>(null);
   const [continueIterationCount, setContinueIterationCount] = useState(3);
@@ -280,6 +287,82 @@ export default function DashboardPage() {
     setContinuePromptNotes("");
     setContinueIterationCount(3);
     setContinueIterationModalOpen(true);
+  };
+
+  const openEditBrandKitModal = (kit: BrandKit, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent selecting the brand kit
+    setEditingBrandKit(kit);
+    brandKitForm.reset({
+      name: kit.name,
+      toneDescription: kit.toneDescription ?? "",
+      targetAudience: kit.targetAudience ?? "",
+      primaryCallToAction: kit.primaryCallToAction ?? "",
+      prohibitedPhrases: kit.prohibitedPhrases?.join(", ") ?? "",
+      manualHexColors: kit.derivedPaletteHex?.join(", ") ?? "",
+    });
+    setEditBrandKitModalOpen(true);
+  };
+
+  const openEditCampaignModal = (campaign: CampaignBrief, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent selecting the campaign
+    setEditingCampaign(campaign);
+    campaignForm.reset({
+      productDescription: campaign.productDescription,
+      audience: campaign.audience,
+      callToAction: campaign.callToAction,
+      toneKeywords: campaign.toneKeywords.join(", "),
+    });
+    setEditCampaignModalOpen(true);
+  };
+
+  const handleUpdateBrandKit = async (values: z.infer<typeof brandKitSchema>) => {
+    if (!editingBrandKit) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("toneDescription", values.toneDescription);
+      if (values.targetAudience) formData.append("targetAudience", values.targetAudience);
+      if (values.primaryCallToAction) formData.append("primaryCallToAction", values.primaryCallToAction);
+      if (values.prohibitedPhrases) formData.append("prohibitedPhrases", values.prohibitedPhrases);
+      if (values.manualHexColors) formData.append("manualHexColors", values.manualHexColors);
+      if (logoFile) formData.append("logo", logoFile);
+      if (paletteFile) formData.append("palette", paletteFile);
+
+      await updateBrandKit(editingBrandKit.id, formData);
+      toast.success("Brand kit updated!");
+      setEditBrandKitModalOpen(false);
+      setEditingBrandKit(null);
+      brandKitForm.reset();
+      setLogoFile(null);
+      setPaletteFile(null);
+      await mutateBrandKits();
+    } catch (error) {
+      toast.error((error as Error).message || "Failed to update brand kit");
+    }
+  };
+
+  const handleUpdateCampaign = async (values: z.infer<typeof campaignSchema>) => {
+    if (!editingCampaign) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("productDescription", values.productDescription);
+      formData.append("audience", values.audience);
+      formData.append("callToAction", values.callToAction);
+      formData.append("toneKeywords", values.toneKeywords);
+      if (productFile) formData.append("product", productFile);
+
+      await updateCampaign(editingCampaign.id, formData);
+      toast.success("Campaign updated!");
+      setEditCampaignModalOpen(false);
+      setEditingCampaign(null);
+      campaignForm.reset();
+      setProductFile(null);
+      await mutateCampaigns();
+    } catch (error) {
+      toast.error((error as Error).message || "Failed to update campaign");
+    }
   };
 
   // Render brand kit form fields
@@ -552,16 +635,23 @@ export default function DashboardPage() {
                       <ScrollArea className="h-[120px]">
                         <div className="space-y-2">
                           {brandKits.map((kit) => (
-                            <button
+                            <div
                               key={kit.id}
+                              className="relative w-full rounded-md border p-3 hover:bg-muted cursor-pointer group"
                               onClick={() => setSelectedBrandKitId(kit.id)}
-                              className="w-full rounded-md border p-3 text-left hover:bg-muted"
                             >
-                              <p className="font-medium">{kit.name}</p>
+                              <button
+                                onClick={(e) => openEditBrandKitModal(kit, e)}
+                                className="absolute top-2 right-2 p-1.5 rounded-md hover:bg-background border opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Edit brand kit"
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </button>
+                              <p className="font-medium pr-8">{kit.name}</p>
                               <p className="text-xs text-muted-foreground line-clamp-1">
                                 {kit.toneDescription}
                               </p>
-                            </button>
+                            </div>
                           ))}
                         </div>
                       </ScrollArea>
@@ -674,16 +764,23 @@ export default function DashboardPage() {
                       <ScrollArea className="h-[120px]">
                         <div className="space-y-2">
                           {campaigns.map((campaign) => (
-                            <button
+                            <div
                               key={campaign.id}
+                              className="relative w-full rounded-md border p-3 hover:bg-muted cursor-pointer group"
                               onClick={() => setSelectedCampaignId(campaign.id)}
-                              className="w-full rounded-md border p-3 text-left hover:bg-muted"
                             >
-                              <p className="font-medium line-clamp-1">{campaign.productDescription}</p>
+                              <button
+                                onClick={(e) => openEditCampaignModal(campaign, e)}
+                                className="absolute top-2 right-2 p-1.5 rounded-md hover:bg-background border opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Edit campaign"
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </button>
+                              <p className="font-medium line-clamp-1 pr-8">{campaign.productDescription}</p>
                               <p className="text-xs text-muted-foreground">
                                 {campaign.audience}
                               </p>
-                            </button>
+                            </div>
                           ))}
                         </div>
                       </ScrollArea>
@@ -957,6 +1054,54 @@ export default function DashboardPage() {
             )}
           </>
         )}
+
+        {/* Edit Brand Kit Modal */}
+        <Dialog open={editBrandKitModalOpen} onOpenChange={setEditBrandKitModalOpen}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Brand Kit</DialogTitle>
+              <DialogDescription>
+                Update your brand&apos;s personality and visual identity
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...brandKitForm}>
+              <form onSubmit={brandKitForm.handleSubmit(handleUpdateBrandKit)} className="space-y-4">
+                {renderBrandKitFormFields("-edit")}
+                <Button type="submit" className="w-full" disabled={brandKitForm.formState.isSubmitting}>
+                  {brandKitForm.formState.isSubmitting ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating...</>
+                  ) : (
+                    "Update Brand Kit"
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Campaign Modal */}
+        <Dialog open={editCampaignModalOpen} onOpenChange={setEditCampaignModalOpen}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Campaign</DialogTitle>
+              <DialogDescription>
+                Update campaign goals and messaging
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...campaignForm}>
+              <form onSubmit={campaignForm.handleSubmit(handleUpdateCampaign)} className="space-y-4">
+                {renderCampaignFormFields("-edit")}
+                <Button type="submit" className="w-full" disabled={campaignForm.formState.isSubmitting}>
+                  {campaignForm.formState.isSubmitting ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating...</>
+                  ) : (
+                    "Update Campaign"
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
 
         {/* Continue Iteration Modal */}
         <Dialog open={continueIterationModalOpen} onOpenChange={setContinueIterationModalOpen}>

@@ -337,6 +337,7 @@ export default function DashboardPage() {
 
     try {
       const formData = new FormData();
+      formData.append("brandKitId", editingCampaign.brandKitId);
       formData.append("productDescription", values.productDescription);
       formData.append("audience", values.audience);
       formData.append("callToAction", values.callToAction);

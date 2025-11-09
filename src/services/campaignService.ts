@@ -33,10 +33,22 @@ export const createCampaignBrief = async (
     throw new Error('Missing required header: X-User-Id');
   }
 
-  if (!brandKitId) {
+  // If updating, get the existing campaign to use its brandKitId if not provided
+  let existingCampaign: CampaignBrief | null = null;
+  if (campaignId) {
+    const { getCampaignById } = await import('../db/campaigns.js');
+    existingCampaign = await getCampaignById(campaignId);
+    if (!existingCampaign) {
+      throw new Error('Campaign not found');
+    }
+  }
+
+  const finalBrandKitId = brandKitId || existingCampaign?.brandKitId;
+  if (!finalBrandKitId) {
     throw new Error('brandKitId is required');
   }
-  const brandKit = await getBrandKitById(ownerId, brandKitId);
+  
+  const brandKit = await getBrandKitById(ownerId, finalBrandKitId);
   if (!brandKit) {
     throw new Error('Brand kit not found or unauthorized');
   }
@@ -48,7 +60,17 @@ export const createCampaignBrief = async (
   const files = request.files as Record<string, Express.Multer.File[]> | undefined;
   const productImage = files?.product?.[0];
 
-  if (!productImage) {
+  // Product image is required only for new campaigns, optional for updates
+  if (!productImage && !campaignId) {
+    throw new Error('Product image is required');
+  }
+  
+  // Use existing product image if not uploading a new one
+  const productImagePath = productImage 
+    ? path.relative(process.cwd(), productImage.path)
+    : existingCampaign?.productImagePath;
+  
+  if (!productImagePath) {
     throw new Error('Product image is required');
   }
 
@@ -61,12 +83,12 @@ export const createCampaignBrief = async (
 
   const campaignData = {
     id: campaignId || uuidv4(),
-    brandKitId,
+    brandKitId: finalBrandKitId,
     productDescription,
     audience,
     callToAction,
     toneKeywords: parseToneKeywords(toneKeywords),
-    productImagePath: path.relative(process.cwd(), productImage.path),
+    productImagePath,
     additionalAssets,
     regenLimit: regen,
   };

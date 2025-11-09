@@ -77,9 +77,11 @@ export const extractAndSaveFrames = async (
   await fs.mkdir(framesDir, { recursive: true });
 
   const videoBasename = path.basename(videoPath, path.extname(videoPath));
-  const framePrefix = `${videoBasename}-frame`;
   const targetDir = path.join(framesDir, videoBasename);
   await fs.mkdir(targetDir, { recursive: true });
+
+  // Use a simple prefix for ffmpeg - it will add the numbers
+  const frameFilename = 'frame-%02i.png';
 
   await new Promise<void>((resolve, reject) => {
     ffmpeg(videoPath)
@@ -87,14 +89,14 @@ export const extractAndSaveFrames = async (
       .on('end', () => resolve())
       .screenshots({
         count: frameCount,
-        filename: `${framePrefix}-%02i.png`,
+        filename: frameFilename,
         folder: targetDir,
       });
   });
 
   const files = await fs.readdir(targetDir);
   const savedFrames = files
-    .filter((file) => file.startsWith(framePrefix))
+    .filter((file) => file.startsWith('frame-') && file.endsWith('.png'))
     .sort()
     .map((file) => path.relative(process.cwd(), path.join(targetDir, file)));
 

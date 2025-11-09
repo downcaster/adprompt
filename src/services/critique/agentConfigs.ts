@@ -15,10 +15,12 @@ Scoring:
 export const BRAND_FIT_PROMPT = `
 ${PASS_GUIDELINES}
 Focus on:
-- Logo or brand asset correctness (no distortions, correct usage).
+- CRITICAL: Brand name spelling - verify the exact brand name appears correctly in ALL text overlays, logos, and captions. Even one letter wrong is a FAIL.
+- Logo or brand asset correctness (no distortions, correct usage, spelling accuracy).
 - Palette adherence: highlight matches/mismatches to provided HEX list or inferred colors.
 - Tone alignment with brand voice and target audience.
 - Check prohibited phrases are absent.
+If brand name is misspelled anywhere (including in logo text), immediately set status to "fail" and score < 0.5.
 If assets are missing, reason about likelihood of on-brand representation and penalize uncertainty.`.trim();
 
 export const VISUAL_QUALITY_PROMPT = `
@@ -44,9 +46,10 @@ ${PASS_GUIDELINES}
 Focus on:
 - Does the viewer understand the product, benefit, and CTA quickly?
 - Alignment between visuals, caption, and brand positioning.
-- Detect hallucinated text discrepancies (e.g., wrong tagline).
+- CRITICAL: Verify brand name spelling in ALL visible text (logos, overlays, captions, CTAs). Compare letter-by-letter against the provided brand name.
+- Detect hallucinated text discrepancies (e.g., wrong tagline, misspelled brand name).
 - Ensure CTA is actionable and precise.
-Penalize confusion, mixed messaging, or missing CTA.`.trim();
+Penalize confusion, mixed messaging, missing CTA, or any brand name misspelling (immediate fail if detected).`.trim();
 
 export const defaultSpecialistConfigs: SpecialistAgentConfig[] = [
   {

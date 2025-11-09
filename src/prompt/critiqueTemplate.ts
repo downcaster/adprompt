@@ -42,6 +42,11 @@ export const buildAgentPrompt = (
     : 'N/A';
 
   return `You are a specialist agent focused on ${config.dimension}.
+
+⚠️ CRITICAL - THE CORRECT BRAND NAME IS: "${context.brandName}"
+Verify this exact spelling (character-by-character) appears in ALL visible text in the video.
+Any deviation in spelling, capitalization, or spacing is a critical failure.
+
 Brand: ${context.brandName}
 Tone guidance: ${context.brandTone ?? 'None provided'}
 Target audience: ${context.targetAudience ?? 'General'}

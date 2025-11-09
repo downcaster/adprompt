@@ -365,7 +365,7 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <main className="container mx-auto space-y-6 p-6">
+        <main className="container mx-auto max-w-6xl space-y-6 p-6">
           <CaptionSection caption={caption} setCaption={setCaption} />
 
           <div className="space-y-4">

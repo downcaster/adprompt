@@ -18,6 +18,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselDots,
 } from "@/components/ui/carousel";
 import { Loader2 } from "lucide-react";
 import { ScorecardRecord } from "@/types/api";
@@ -206,6 +207,7 @@ export function ResultsDisplay({
               </CarouselContent>
               <CarouselPrevious />
               <CarouselNext />
+              <CarouselDots />
             </Carousel>
           </CardContent>
         </Card>

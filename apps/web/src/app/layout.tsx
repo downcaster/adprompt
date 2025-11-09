@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background antialiased`} suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background antialiased`} suppressHydrationWarning data-new-gr-c-s-check-loaded data-gr-ext-installed>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster richColors />

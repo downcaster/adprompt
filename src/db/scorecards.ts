@@ -8,10 +8,22 @@ import { pool } from './index.js';
 import type { AgentStatus, Scorecard, ScorecardRecord } from '../types/scorecard.js';
 import { agentScoreSchema } from '../services/critique/scoreAggregator.js';
 
+// Lenient schema for reading from DB (supports legacy dimensions)
+const legacyAgentScoreSchema = z.object({
+  dimension: z.string(), // Accept any string for backward compatibility
+  score: z.number().min(0).max(1),
+  status: z.enum(['pass', 'fail']),
+  evidence: z.object({
+    summary: z.string(),
+    citations: z.array(z.string()).optional(),
+  }),
+  metadata: z.record(z.unknown()).optional(),
+});
+
 const scorecardSchema = z.object({
   assetUrl: z.string(),
   iterations: z.number(),
-  scores: z.array(agentScoreSchema),
+  scores: z.array(legacyAgentScoreSchema),
   overallStatus: z.enum(['pass', 'fail']),
   createdAt: z.string(),
 });

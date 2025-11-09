@@ -2,7 +2,7 @@ import { BrandKit, CampaignBrief, PublishLogRecord, ScorecardRecord } from "@/ty
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api";
 const DEMO_USER_ID = process.env.NEXT_PUBLIC_DEMO_USER_ID ?? "demo-user";
-const DEMO_USER_EMAIL = process.env.NEXT_PUBLIC_DEMO_USER_EMAIL ?? `${DEMO_USER_ID}@brandai.local`;
+const DEMO_USER_EMAIL = process.env.NEXT_PUBLIC_DEMO_USER_EMAIL ?? `${DEMO_USER_ID}@adprompt.local`;
 
 const defaultHeaders: HeadersInit = {
   "X-User-Id": DEMO_USER_ID,

@@ -303,7 +303,7 @@ function DashboardPage() {
               <Zap className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">BrandAI Orchestrator</p>
+              <p className="text-sm font-medium text-muted-foreground">ADPrompt Orchestrator</p>
               <h1 className="text-xl font-semibold leading-tight">Autonomous Ad Quality Dashboard</h1>
             </div>
           </div>

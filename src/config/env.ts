@@ -1,5 +1,5 @@
 /**
- * @file Provides environment configuration loading and validation for the BrandAI stack.
+ * @file Provides environment configuration loading and validation for the ADPrompt stack.
  */
 
 import dotenv from 'dotenv';

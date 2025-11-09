@@ -43,7 +43,7 @@ const bootstrap = async () => {
 
   app.listen(env.port, () => {
     // eslint-disable-next-line no-console -- CLI visibility for local dev.
-    console.log(`BrandAI critique service listening on port ${env.port}`);
+    console.log(`ADPrompt critique service listening on port ${env.port}`);
   });
 };
 

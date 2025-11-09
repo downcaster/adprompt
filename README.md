@@ -1,6 +1,6 @@
-# BrandAI Critique Engine
+# ADPrompt - AI Ad Critique Engine
 
-BrandAI is a hackathon prototype that automates quality control for AI-generated ads. It ingests brand kits, orchestrates Gemini 2.5 Flash specialist agents to critique generated videos, and can trigger Veo regenerations until the output is safe, on-brand, and ready for human approval.
+ADPrompt is a hackathon prototype that automates quality control for AI-generated ads. It ingests brand kits, orchestrates Gemini 2.5 Flash specialist agents to critique generated videos, and can trigger Veo regenerations until the output is safe, on-brand, and ready for human approval.
 
 ## Features
 

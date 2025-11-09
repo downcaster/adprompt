@@ -2,7 +2,7 @@
   "name": "adprompt",
   "version": "1.0.0",
   "type": "module",
-  "description": "BrandAI critique engine prototype",
+  "description": "ADPrompt critique engine prototype",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

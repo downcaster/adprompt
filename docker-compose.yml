@@ -72,7 +72,7 @@ services:
       PORT: 3001
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3000/api
       NEXT_PUBLIC_DEMO_USER_ID: 00000000-0000-0000-0000-000000000001
-      NEXT_PUBLIC_DEMO_USER_EMAIL: demo@brandai.local
+      NEXT_PUBLIC_DEMO_USER_EMAIL: demo@adprompt.local
       # Turbopack for faster dev builds
       TURBOPACK: 1
     ports:

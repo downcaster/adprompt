@@ -2,7 +2,7 @@
 
 # Help command
 help:
-	@echo "BrandAI Docker Commands:"
+	@echo "ADPrompt Docker Commands:"
 	@echo "  make dev        - Start all services in development mode"
 	@echo "  make up         - Start all services (alias for dev)"
 	@echo "  make down       - Stop all services"

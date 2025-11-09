@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BrandAI Dashboard",
+  title: "ADPrompt Dashboard",
   description: "Critique, regenerate, and publish AI-generated ads with confidence.",
 };
 

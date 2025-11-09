@@ -523,7 +523,7 @@ export default function DashboardPage() {
                       </ScrollArea>
                       <Dialog open={brandKitModalOpen} onOpenChange={setBrandKitModalOpen}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="w-full">
+                          <Button variant="outline" className="w-full h-10">
                             <Plus className="mr-2 h-4 w-4" /> Create New
                           </Button>
                         </DialogTrigger>
@@ -645,7 +645,7 @@ export default function DashboardPage() {
                       </ScrollArea>
                       <Dialog open={campaignModalOpen} onOpenChange={setCampaignModalOpen}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="w-full">
+                          <Button variant="outline" className="w-full h-10">
                             <Plus className="mr-2 h-4 w-4" /> Create New
                           </Button>
                         </DialogTrigger>

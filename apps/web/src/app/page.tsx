@@ -458,28 +458,40 @@ export default function DashboardPage() {
             {selectedBrandKit ? (
               <Card className="border-2 border-primary">
                 <CardHeader>
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Palette className="h-5 w-5 text-primary" />
                       <CardTitle className="text-base">Brand Kit</CardTitle>
                     </div>
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <p className="font-medium">{selectedBrandKit.name}</p>
+                <CardContent className="space-y-3">
+                  <div className="rounded-lg bg-primary/5 p-3 space-y-1">
+                    <p className="font-semibold text-base">{selectedBrandKit.name}</p>
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {selectedBrandKit.toneDescription}
                     </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedBrandKitId(null)}
-                    >
-                      Change
-                    </Button>
+                    {selectedBrandKit.derivedPaletteHex && selectedBrandKit.derivedPaletteHex.length > 0 && (
+                      <div className="flex gap-1 mt-2">
+                        {selectedBrandKit.derivedPaletteHex.slice(0, 5).map((color, idx) => (
+                          <div
+                            key={idx}
+                            className="h-4 w-4 rounded-full border"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setSelectedBrandKitId(null)}
+                  >
+                    Change Brand Kit
+                  </Button>
                 </CardContent>
               </Card>
             ) : (
@@ -575,28 +587,34 @@ export default function DashboardPage() {
             {selectedCampaign ? (
               <Card className="border-2 border-primary">
                 <CardHeader>
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Layers className="h-5 w-5 text-primary" />
                       <CardTitle className="text-base">Campaign Brief</CardTitle>
                     </div>
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <p className="font-medium line-clamp-1">{selectedCampaign.productDescription}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Target: {selectedCampaign.audience}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedCampaignId(null)}
-                    >
-                      Change
-                    </Button>
+                <CardContent className="space-y-3">
+                  <div className="rounded-lg bg-primary/5 p-3 space-y-2">
+                    <p className="font-semibold text-base line-clamp-2">{selectedCampaign.productDescription}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium">Target:</span> {selectedCampaign.audience}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium">CTA:</span> {selectedCampaign.callToAction}
+                      </p>
+                    </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setSelectedCampaignId(null)}
+                  >
+                    Change Campaign
+                  </Button>
                 </CardContent>
               </Card>
             ) : (

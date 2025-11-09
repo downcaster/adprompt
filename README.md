@@ -64,14 +64,14 @@ ADPrompt is a hackathon prototype that automates quality control for AI-generate
 
 ## Getting Started
 
+> **⚠️ IMPORTANT:** ADPrompt must be run using Docker & Docker Compose. This ensures all dependencies (PostgreSQL, ffmpeg, Node.js) are correctly configured with hot reload support.
+
 ### Prerequisites
 
-- **Docker & Docker Compose** (recommended) OR
-- Node.js 20+ with Postgres instance (local setup)
+- **Docker & Docker Compose** - **REQUIRED** for running the project
 - Google AI Studio API keys with access to Gemini 2.5 Flash and Veo endpoints
-- ffmpeg (bundled via `@ffmpeg-installer/ffmpeg`)
 
-### Quick Start with Docker (Recommended)
+### Quick Start with Docker
 
 **Step 1: Clone the repository**
 
@@ -136,15 +136,9 @@ make down
 
 See [DOCKER.md](./DOCKER.md) for complete Docker documentation and troubleshooting.
 
-### Local Development (Without Docker)
+---
 
-**Prerequisites:**
-
-- Node.js 20+
-- PostgreSQL running on localhost:5432
-- Google AI Studio API keys
-
-**Step 1: Clone and install dependencies**
+**Note:** Local development without Docker is not officially supported. The Docker setup is required to ensure proper environment configuration, dependencies, and hot reload functionality.
 
 ```bash
 git clone https://github.com/downcaster/adprompt.git

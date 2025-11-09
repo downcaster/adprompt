@@ -1,4 +1,13 @@
-# Chess AI Tutor - Root Rules
+# ADPrompt - Root Rules
+
+## CRITICAL: Docker Required
+
+**⚠️ ADPrompt MUST be run using Docker & Docker Compose.** All services (backend, frontend, PostgreSQL) run in containers with hot reload support.
+
+- Start: `make dev` or `docker-compose up -d`
+- Logs: `make logs`, `make backend`, `make frontend`
+- Stop: `make down`
+- See `DOCKER.md` for complete documentation
 
 ## CRITICAL: Read Rules Directory
 
@@ -6,7 +15,7 @@ Before implementing features, READ the relevant files in the `rules/` directory:
 
 - **`rules/ai-collaboration.md`** - AI collaboration style and workflow (READ FIRST)
 - **`rules/challenge.md`** - Hackathon challenge brief and success criteria
-- **`rules/stack.md`** - Technology stack and architecture decisions
+- **`rules/stack.md`** - Technology stack and architecture decisions (includes Docker setup)
 - **`rules/structure.md`** - Project file structure and folder organization
 - **`rules/documentation.md`** - Documentation rules and JSDoc standards
 - **`rules/development.md`** - Development guidelines and best practices

@@ -230,10 +230,11 @@ export default function DashboardPage() {
 
     try {
       setIsContinuingIteration(true);
-      
+
       // Use: 1) new notes from modal, 2) original caption from scorecard, 3) current caption state
-      const captionToUse = continuePromptNotes || selectedScorecardForContinue.caption || caption;
-      
+      const captionToUse =
+        continuePromptNotes || selectedScorecardForContinue.caption || caption;
+
       const payload = await generateAndCritique({
         brandKitId: selectedBrandKitId,
         campaignId: selectedCampaignId,

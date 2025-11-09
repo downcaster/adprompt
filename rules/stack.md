@@ -1,13 +1,18 @@
 # Stack & Architecture
 
+## Development Environment
+- **Docker & Docker Compose**: **REQUIRED** for running the project. All services (backend, frontend, PostgreSQL) run in containers with hot reload support.
+- Use `make dev` or `docker-compose up -d` to start the entire stack.
+- See `DOCKER.md` for complete setup instructions and troubleshooting.
+
 ## Technology Stack
 - Runtime: Node.js 20+ with TypeScript.
 - API: Express with typed routes housed under `src/routes/`.
 - AI Services: Google AI Studio (Gemini 2.5 Flash for critique agents, Veo for generation) via REST APIs.
-- Media tooling: `ffmpeg` for frame extraction, `opencv4nodejs` for logo/palette checks.
+- Media tooling: `ffmpeg` for frame extraction (bundled in Docker image).
 - Palette extraction: `node-vibrant` for pulling HEX swatches from uploaded palette assets.
-- Storage: Postgres (primary store for users, brand kits, briefs, scorecards, publish logs) with asset files persisted locally under `storage/uploads/` (gitignored).
-- Frontend: React + Vite client consuming the API, using shadcn/ui as the shared design system (to be scaffolded).
+- Storage: PostgreSQL (primary store for users, brand kits, briefs, scorecards, publish logs) with asset files persisted locally under `storage/uploads/` (gitignored).
+- Frontend: Next.js 16 (Turbopack) with React, using shadcn/ui as the design system.
 - Asset handling: `multer` + helpers in `src/utils/uploads.ts`, `mime-types` for Veo asset MIME detection. Generated videos are written to `storage/uploads/generated` (served publicly at `/uploads/...`).
 - TypeScript policy: avoid `any`. When inference fails, use specific interfaces or `unknown` with runtime validation (e.g., Zod).
 

@@ -69,7 +69,8 @@ const collectManualHex = (raw?: string): string[] | undefined => {
   if (!raw) {
     return undefined;
   }
-  const tokens = raw.split(',');
+  // Split by spaces (and optionally commas) to allow flexible input like "#fff #000" or "#fff, #000"
+  const tokens = raw.split(/[\s,]+/).filter(t => t.length > 0);
   const normalized = tokens
     .map((token) => normalizeHex(token))
     .filter((hex): hex is string => Boolean(hex));

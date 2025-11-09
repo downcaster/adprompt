@@ -26,6 +26,7 @@ const buildCritiqueContext = (
   derivedPaletteHex: brand.derivedPaletteHex,
   scoreThreshold,
   caption,
+  productDescription: campaign.productDescription,
 });
 
 export interface GenerationResult {

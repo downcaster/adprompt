@@ -14,6 +14,7 @@ export interface CritiqueContext {
   scoreThreshold: number;
   assetFrames: string[];
   caption?: string;
+  productDescription?: string;
 }
 
 export interface AgentPromptConfig {
@@ -47,7 +48,11 @@ export const buildAgentPrompt = (
 Verify this exact spelling (character-by-character) appears in ALL visible text in the video.
 Any deviation in spelling, capitalization, or spacing is a critical failure.
 
+⚠️ CRITICAL - THE PRODUCT IS: "${context.productDescription ?? 'Not specified'}"
+This product MUST be physically visible in the video. Abstract representations or implications are NOT sufficient.
+
 Brand: ${context.brandName}
+Product: ${context.productDescription ?? 'Not specified'}
 Tone guidance: ${context.brandTone ?? 'None provided'}
 Target audience: ${context.targetAudience ?? 'General'}
 Call to action: ${context.callToAction ?? 'None provided'}

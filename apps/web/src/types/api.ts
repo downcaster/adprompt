@@ -1,7 +1,7 @@
 export type AgentStatus = "pass" | "fail";
 
 export interface AgentScore {
-  dimension: "BrandFit" | "VisualQuality" | "Safety" | "Clarity";
+  dimension: "BrandFit" | "VisualQuality" | "Safety" | "Clarity" | "TextAccuracy" | "ProductPresence";
   score: number;
   status: AgentStatus;
   evidence: {

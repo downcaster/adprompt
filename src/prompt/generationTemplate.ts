@@ -63,13 +63,14 @@ ${prohibited}
 ${feedback}
 
 Requirements:
-- MOST IMPORTANT: The brand name "${brand.name}" must be spelled EXACTLY correctly in any text overlays or voice-over.
-- Showcase the product clearly within first second.
+- CRITICAL #1: The PRODUCT (${campaign.productDescription}) MUST be physically visible in the video. If the product is not shown, this is an automatic FAIL.
+- CRITICAL #2: The brand name "${brand.name}" must be spelled EXACTLY correctly in any text overlays or voice-over. Any typo or misspelling is an automatic FAIL.
+- Showcase the product clearly and prominently within the first second.
 - Keep video between 5-10 seconds.
 - Highlight CTA on screen text near the end.
 - Ensure logo appears cleanly in final frame.
 - Avoid hallucinated text or incorrect brand references.
-- If you show the brand name "${brand.name}" in text, verify the spelling is EXACT.
+- The product must be recognizable and clearly visible (not abstract, not implied).
 
 Produce cinematic camera motion, crisp lighting, and social-ready composition.`;
 };

@@ -104,3 +104,52 @@ export const getBrandKitById = async (
 
   return mapRowToBrandKit(rows[0]);
 };
+
+export const updateBrandKit = async (
+  id: string,
+  payload: Omit<Parameters<typeof createBrandKit>[0], 'id'> & { id: string },
+): Promise<BrandKit> => {
+  const {
+    ownerId,
+    name,
+    logoPath,
+    paletteAssetPath,
+    derivedPaletteHex,
+    toneDescription,
+    prohibitedPhrases,
+    targetAudience,
+    primaryCallToAction,
+  } = payload;
+
+  const { rows } = await pool.query(
+    `UPDATE brand_kits SET
+      name = $1,
+      logo_path = $2,
+      palette_asset_path = $3,
+      derived_palette_hex = $4,
+      tone_description = $5,
+      prohibited_phrases = $6,
+      target_audience = $7,
+      primary_call_to_action = $8
+    WHERE id = $9 AND owner_id = $10
+    RETURNING *`,
+    [
+      name,
+      logoPath ?? null,
+      paletteAssetPath ?? null,
+      derivedPaletteHex ?? null,
+      toneDescription ?? null,
+      prohibitedPhrases ?? null,
+      targetAudience ?? null,
+      primaryCallToAction ?? null,
+      id,
+      ownerId,
+    ],
+  );
+
+  if (rows.length === 0) {
+    throw new Error('Brand kit not found or unauthorized');
+  }
+
+  return mapRowToBrandKit(rows[0]);
+};

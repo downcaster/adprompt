@@ -99,3 +99,50 @@ export const getCampaignById = async (
 
   return mapRowToCampaign(rows[0]);
 };
+
+export const updateCampaign = async (
+  id: string,
+  payload: Omit<Parameters<typeof createCampaign>[0], 'id'> & { id: string },
+): Promise<CampaignBrief> => {
+  const {
+    brandKitId,
+    productDescription,
+    audience,
+    callToAction,
+    toneKeywords,
+    productImagePath,
+    additionalAssets,
+    regenLimit,
+  } = payload;
+
+  const { rows } = await pool.query(
+    `UPDATE campaign_briefs SET
+      brand_kit_id = $1,
+      product_description = $2,
+      audience = $3,
+      call_to_action = $4,
+      tone_keywords = $5,
+      product_image_path = $6,
+      additional_assets = $7,
+      regen_limit = $8
+    WHERE id = $9
+    RETURNING *`,
+    [
+      brandKitId,
+      productDescription,
+      audience,
+      callToAction,
+      toneKeywords,
+      productImagePath,
+      additionalAssets ?? null,
+      regenLimit,
+      id,
+    ],
+  );
+
+  if (rows.length === 0) {
+    throw new Error('Campaign not found');
+  }
+
+  return mapRowToCampaign(rows[0]);
+};

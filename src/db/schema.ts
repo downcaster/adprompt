@@ -45,6 +45,7 @@ const bootstrapStatements = [
       video_path TEXT NOT NULL,
       video_url TEXT NOT NULL,
       caption TEXT,
+      frame_paths TEXT[],
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`,
   `CREATE TABLE IF NOT EXISTS publish_logs (
@@ -73,5 +74,11 @@ export const ensureSchema = async (): Promise<void> => {
   await pool.query(`
     ALTER TABLE scorecards 
     ADD COLUMN IF NOT EXISTS caption TEXT
+  `);
+  
+  // Add frame_paths column to scorecards if it doesn't exist (migration)
+  await pool.query(`
+    ALTER TABLE scorecards 
+    ADD COLUMN IF NOT EXISTS frame_paths TEXT[]
   `);
 };

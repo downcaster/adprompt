@@ -63,3 +63,40 @@ export const extractFrames = async (
 
   return { frames, cleanup };
 };
+
+/**
+ * Extracts frames and saves them permanently alongside the video
+ */
+export const extractAndSaveFrames = async (
+  videoPath: string,
+  frameCount: number = 6,
+): Promise<string[]> => {
+  const { ensureUploadsDir } = await import('./uploads.js');
+  const uploadsDir = ensureUploadsDir();
+  const framesDir = path.join(uploadsDir, 'frames');
+  await fs.mkdir(framesDir, { recursive: true });
+
+  const videoBasename = path.basename(videoPath, path.extname(videoPath));
+  const framePrefix = `${videoBasename}-frame`;
+  const targetDir = path.join(framesDir, videoBasename);
+  await fs.mkdir(targetDir, { recursive: true });
+
+  await new Promise<void>((resolve, reject) => {
+    ffmpeg(videoPath)
+      .on('error', (error) => reject(error))
+      .on('end', () => resolve())
+      .screenshots({
+        count: frameCount,
+        filename: `${framePrefix}-%02i.png`,
+        folder: targetDir,
+      });
+  });
+
+  const files = await fs.readdir(targetDir);
+  const savedFrames = files
+    .filter((file) => file.startsWith(framePrefix))
+    .sort()
+    .map((file) => path.relative(process.cwd(), path.join(targetDir, file)));
+
+  return savedFrames;
+};

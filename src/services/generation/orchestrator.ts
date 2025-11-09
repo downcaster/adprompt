@@ -75,6 +75,10 @@ export const generateWithCritique = async (
     const videoPublicUrl = buildPublicUploadUrl(generation.videoPath);
     const uploadsRelativePath = toUploadsRelativePath(generation.videoPath);
 
+    // Extract and save frames permanently
+    const { extractAndSaveFrames } = await import('../../utils/videoFrames.js');
+    const framePaths = await extractAndSaveFrames(generation.videoPath, 6);
+
     const critique = await runCritique({
       assetPath: generation.videoPath,
       assetUrl: videoPublicUrl,
@@ -95,6 +99,7 @@ export const generateWithCritique = async (
       videoPath: uploadsRelativePath,
       videoUrl: videoPublicUrl,
       caption: options.caption,
+      framePaths,
     });
 
     const result: GenerationResult = {

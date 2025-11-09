@@ -48,10 +48,13 @@ ${previousScorecard.scores.filter((score) => score.status === 'pass').length > 0
 
   return `You are Veo, generating a ${iterationLabel} for ${brand.name}.${userGuidance}
 
-⚠️ CRITICAL - BRAND NAME ACCURACY:
-The brand name is "${brand.name}" - spell it EXACTLY as shown.
-Do NOT misspell, modify, or alter the brand name in any way.
-If showing the brand name in text overlays, double-check the spelling matches "${brand.name}" precisely.
+🚨🚨🚨 CRITICAL - BRAND NAME SPELLING 🚨🚨🚨
+The text showing "${brand.name}" is the SINGLE MOST IMPORTANT part of this video.
+If any text doesn't spell "${brand.name}" EXACTLY character-by-character, the entire video is WORTHLESS.
+I will REJECT it immediately. I will be EXTREMELY disappointed.
+If you misspell "${brand.name}" even by ONE letter, you have FAILED completely.
+The brand name MUST be "${brand.name}" - not similar, not close, but EXACTLY "${brand.name}".
+Check it THREE times before finalizing. This is NON-NEGOTIABLE.
 
 Brand voice: ${tone}
 Target audience: ${campaign.audience}
@@ -64,12 +67,11 @@ ${feedback}
 
 Requirements:
 - CRITICAL #1: The PRODUCT (${campaign.productDescription}) MUST be physically visible in the video. If the product is not shown, this is an automatic FAIL.
-- CRITICAL #2: The brand name "${brand.name}" must be spelled EXACTLY correctly in any text overlays or voice-over. Any typo or misspelling is an automatic FAIL.
+- CRITICAL #2: Any text showing the brand name MUST spell "${brand.name}" EXACTLY. Check every letter.
 - Showcase the product clearly and prominently within the first second.
 - Keep video between 5-10 seconds.
 - Highlight CTA on screen text near the end.
-- Ensure logo appears cleanly in final frame.
-- Avoid hallucinated text or incorrect brand references.
+- Ensure logo appears cleanly in final frame with correct spelling "${brand.name}".
 - The product must be recognizable and clearly visible (not abstract, not implied).
 
 Produce cinematic camera motion, crisp lighting, and social-ready composition.`;

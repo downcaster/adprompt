@@ -82,7 +82,6 @@ const campaignSchema = z.object({
   audience: z.string().min(1, { message: "Audience is required" }),
   callToAction: z.string().min(1, { message: "Call to action is required" }),
   toneKeywords: z.string().min(1, { message: "Tone keywords required" }),
-  regenLimit: z.string().default("5"),
 });
 
 export default function DashboardPage() {
@@ -90,6 +89,7 @@ export default function DashboardPage() {
   const [selectedBrandKitId, setSelectedBrandKitId] = useState<string | null>(null);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
+  const [regenLimit, setRegenLimit] = useState(5);
   const [isDrafting, setIsDrafting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [brandKitModalOpen, setBrandKitModalOpen] = useState(false);
@@ -131,7 +131,6 @@ export default function DashboardPage() {
       audience: "",
       callToAction: "",
       toneKeywords: "",
-      regenLimit: "5",
     },
   });
 
@@ -183,7 +182,7 @@ export default function DashboardPage() {
       formData.append("audience", values.audience);
       formData.append("callToAction", values.callToAction);
       formData.append("toneKeywords", values.toneKeywords);
-      formData.append("regenLimit", values.regenLimit);
+      formData.append("regenLimit", "5"); // Default value, user can override in Generate section
       formData.append("product", productFile);
 
       const campaign = await createCampaign(formData);
@@ -211,6 +210,7 @@ export default function DashboardPage() {
           brandKitId: selectedBrandKitId,
           campaignId: selectedCampaignId,
           caption,
+          regenLimit,
         });
         toast.success(
           payload.final.passed
@@ -390,19 +390,6 @@ export default function DashboardPage() {
               <Input placeholder="energetic, motivational, premium" {...field} />
             </FormControl>
             <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={campaignForm.control}
-        name="regenLimit"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Regeneration Limit</FormLabel>
-            <FormControl>
-              <Input type="number" min="1" max="10" {...field} />
-            </FormControl>
-            <FormDescription>Max iterations for critique loop</FormDescription>
           </FormItem>
         )}
       />
@@ -723,7 +710,30 @@ export default function DashboardPage() {
               }
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
+            {/* Regeneration Limit Control */}
+            <div className="space-y-2">
+              <Label htmlFor="regen-limit">
+                Regeneration Limit (Critique Loop)
+              </Label>
+              <div className="flex items-center gap-4">
+                <Input
+                  id="regen-limit"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={regenLimit}
+                  onChange={(e) => setRegenLimit(Number.parseInt(e.target.value, 10) || 5)}
+                  className="w-24"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Max iterations for AI critique feedback loop (default: 5)
+                </p>
+              </div>
+            </div>
+            
+            <Separator />
+
             <div className="grid gap-3 sm:grid-cols-2">
               <Button
                 variant="outline"

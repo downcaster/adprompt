@@ -38,24 +38,32 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 export default function DashboardPage() {
   // State
-  const [selectedBrandKitId, setSelectedBrandKitId] = useState<string | null>(null);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+  const [selectedBrandKitId, setSelectedBrandKitId] = useState<string | null>(
+    null
+  );
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(
+    null
+  );
   const [caption, setCaption] = useState("");
   const [regenLimit, setRegenLimit] = useState(5);
   const [isDrafting, setIsDrafting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  
+
   // Modal states
   const [brandKitModalOpen, setBrandKitModalOpen] = useState(false);
   const [campaignModalOpen, setCampaignModalOpen] = useState(false);
   const [editBrandKitModalOpen, setEditBrandKitModalOpen] = useState(false);
   const [editCampaignModalOpen, setEditCampaignModalOpen] = useState(false);
-  const [continueIterationModalOpen, setContinueIterationModalOpen] = useState(false);
-  
+  const [continueIterationModalOpen, setContinueIterationModalOpen] =
+    useState(false);
+
   // Edit states
   const [editingBrandKit, setEditingBrandKit] = useState<BrandKit | null>(null);
-  const [editingCampaign, setEditingCampaign] = useState<CampaignBrief | null>(null);
-  const [selectedScorecardForContinue, setSelectedScorecardForContinue] = useState<ScorecardRecord | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState<CampaignBrief | null>(
+    null
+  );
+  const [selectedScorecardForContinue, setSelectedScorecardForContinue] =
+    useState<ScorecardRecord | null>(null);
   const [continueIterationCount, setContinueIterationCount] = useState(3);
   const [continuePromptNotes, setContinuePromptNotes] = useState("");
   const [isContinuingIteration, setIsContinuingIteration] = useState(false);
@@ -66,14 +74,23 @@ export default function DashboardPage() {
   const [productFile, setProductFile] = useState<File | null>(null);
 
   // Data fetching
-  const { data: brandKits, mutate: mutateBrandKits } = useSWR<BrandKit[]>("brandKits", listBrandKits);
+  const { data: brandKits, mutate: mutateBrandKits } = useSWR<BrandKit[]>(
+    "brandKits",
+    listBrandKits
+  );
   const { data: campaigns, mutate: mutateCampaigns } = useSWR<CampaignBrief[]>(
     selectedBrandKitId ? `campaigns-${selectedBrandKitId}` : null,
-    () => selectedBrandKitId ? listCampaigns(selectedBrandKitId) : Promise.resolve([])
+    () =>
+      selectedBrandKitId
+        ? listCampaigns(selectedBrandKitId)
+        : Promise.resolve([])
   );
-  const { data: scorecards, mutate: mutateScorecards} = useSWR<ScorecardRecord[]>(
-    selectedCampaignId ? `scorecards-${selectedCampaignId}` : null,
-    () => selectedCampaignId ? listScorecardsByCampaign(selectedCampaignId) : Promise.resolve([])
+  const { data: scorecards, mutate: mutateScorecards } = useSWR<
+    ScorecardRecord[]
+  >(selectedCampaignId ? `scorecards-${selectedCampaignId}` : null, () =>
+    selectedCampaignId
+      ? listScorecardsByCampaign(selectedCampaignId)
+      : Promise.resolve([])
   );
 
   // Forms
@@ -84,23 +101,36 @@ export default function DashboardPage() {
 
   const campaignForm = useForm<z.infer<typeof campaignSchema>>({
     resolver: zodResolver(campaignSchema),
-    defaultValues: { productDescription: "", audience: "", callToAction: "", toneKeywords: "" },
+    defaultValues: {
+      productDescription: "",
+      audience: "",
+      callToAction: "",
+      toneKeywords: "",
+    },
   });
 
   // Selected items
-  const selectedBrandKit = brandKits?.find((kit) => kit.id === selectedBrandKitId);
+  const selectedBrandKit = brandKits?.find(
+    (kit) => kit.id === selectedBrandKitId
+  );
   const selectedCampaign = campaigns?.find((c) => c.id === selectedCampaignId);
 
   // Handlers
-  const handleCreateBrandKit = async (values: z.infer<typeof brandKitSchema>) => {
+  const handleCreateBrandKit = async (
+    values: z.infer<typeof brandKitSchema>
+  ) => {
     try {
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("toneDescription", values.toneDescription);
-      if (values.targetAudience) formData.append("targetAudience", values.targetAudience);
-      if (values.primaryCallToAction) formData.append("primaryCallToAction", values.primaryCallToAction);
-      if (values.prohibitedPhrases) formData.append("prohibitedPhrases", values.prohibitedPhrases);
-      if (values.manualHexColors) formData.append("manualHexColors", values.manualHexColors);
+      if (values.targetAudience)
+        formData.append("targetAudience", values.targetAudience);
+      if (values.primaryCallToAction)
+        formData.append("primaryCallToAction", values.primaryCallToAction);
+      if (values.prohibitedPhrases)
+        formData.append("prohibitedPhrases", values.prohibitedPhrases);
+      if (values.manualHexColors)
+        formData.append("manualHexColors", values.manualHexColors);
       if (logoFile) formData.append("logo", logoFile);
       if (paletteFile) formData.append("palette", paletteFile);
 
@@ -117,7 +147,9 @@ export default function DashboardPage() {
     }
   };
 
-  const handleCreateCampaign = async (values: z.infer<typeof campaignSchema>) => {
+  const handleCreateCampaign = async (
+    values: z.infer<typeof campaignSchema>
+  ) => {
     if (!selectedBrandKitId) {
       toast.error("Please select a brand kit first");
       return;
@@ -179,10 +211,20 @@ export default function DashboardPage() {
     }
   };
 
-  const canGenerate = !!(selectedBrandKitId && selectedCampaignId && !isDrafting && !isGenerating);
+  const canGenerate = !!(
+    selectedBrandKitId &&
+    selectedCampaignId &&
+    !isDrafting &&
+    !isGenerating
+  );
 
   const handleContinueFromScorecard = async () => {
-    if (!selectedScorecardForContinue || !selectedBrandKitId || !selectedCampaignId) return;
+    if (
+      !selectedScorecardForContinue ||
+      !selectedBrandKitId ||
+      !selectedCampaignId
+    )
+      return;
 
     setContinueIterationModalOpen(false);
 
@@ -235,7 +277,10 @@ export default function DashboardPage() {
     setEditBrandKitModalOpen(true);
   };
 
-  const openEditCampaignModal = (campaign: CampaignBrief, e: React.MouseEvent) => {
+  const openEditCampaignModal = (
+    campaign: CampaignBrief,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation();
     setEditingCampaign(campaign);
     campaignForm.reset({
@@ -247,17 +292,23 @@ export default function DashboardPage() {
     setEditCampaignModalOpen(true);
   };
 
-  const handleUpdateBrandKit = async (values: z.infer<typeof brandKitSchema>) => {
+  const handleUpdateBrandKit = async (
+    values: z.infer<typeof brandKitSchema>
+  ) => {
     if (!editingBrandKit) return;
 
     try {
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("toneDescription", values.toneDescription);
-      if (values.targetAudience) formData.append("targetAudience", values.targetAudience);
-      if (values.primaryCallToAction) formData.append("primaryCallToAction", values.primaryCallToAction);
-      if (values.prohibitedPhrases) formData.append("prohibitedPhrases", values.prohibitedPhrases);
-      if (values.manualHexColors) formData.append("manualHexColors", values.manualHexColors);
+      if (values.targetAudience)
+        formData.append("targetAudience", values.targetAudience);
+      if (values.primaryCallToAction)
+        formData.append("primaryCallToAction", values.primaryCallToAction);
+      if (values.prohibitedPhrases)
+        formData.append("prohibitedPhrases", values.prohibitedPhrases);
+      if (values.manualHexColors)
+        formData.append("manualHexColors", values.manualHexColors);
       if (logoFile) formData.append("logo", logoFile);
       if (paletteFile) formData.append("palette", paletteFile);
 
@@ -274,7 +325,9 @@ export default function DashboardPage() {
     }
   };
 
-  const handleUpdateCampaign = async (values: z.infer<typeof campaignSchema>) => {
+  const handleUpdateCampaign = async (
+    values: z.infer<typeof campaignSchema>
+  ) => {
     if (!editingCampaign) return;
 
     try {
@@ -303,7 +356,9 @@ export default function DashboardPage() {
         <header className="border-b">
           <div className="container mx-auto flex items-center justify-between p-4">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">ADPrompt</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                ADPrompt
+              </p>
               <h1 className="text-xl font-semibold">AI Ad Generator</h1>
             </div>
             <ModeToggle />
@@ -315,7 +370,9 @@ export default function DashboardPage() {
 
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg font-semibold">Connect your brand & campaign</h2>
+              <h2 className="text-lg font-semibold">
+                Connect your brand & campaign
+              </h2>
               <p className="text-sm text-muted-foreground">
                 Both are required to generate videos
               </p>
@@ -407,4 +464,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

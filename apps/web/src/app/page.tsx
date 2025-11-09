@@ -895,22 +895,16 @@ export default function DashboardPage() {
               <Button
                 variant="outline"
                 onClick={() => handleGenerate(false)}
-                disabled={!canGenerate}
-                className="h-auto py-4"
+                disabled={true}
+                className="h-auto py-4 opacity-50 cursor-not-allowed"
               >
-                {isDrafting ? (
-                  <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Drafting...</>
-                ) : (
-                  <>
-                    <PlayCircle className="mr-2 h-5 w-5" />
-                    <div className="text-left">
-                      <div className="font-semibold">Generate Draft</div>
-                      <div className="text-xs font-normal text-muted-foreground">
-                        Quick video without critique
-                      </div>
-                    </div>
-                  </>
-                )}
+                <PlayCircle className="mr-2 h-5 w-5" />
+                <div className="text-left">
+                  <div className="font-semibold">Generate Draft (WIP)</div>
+                  <div className="text-xs font-normal text-muted-foreground">
+                    Coming soon - use critique instead
+                  </div>
+                </div>
               </Button>
               <Button
                 onClick={() => handleGenerate(true)}

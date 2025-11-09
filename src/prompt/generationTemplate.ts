@@ -42,6 +42,12 @@ ${previousScorecard.scores.filter((score) => score.status === 'pass').length > 0
   const iterationLabel = iteration === 1 ? 'Initial concept' : `Refinement pass #${iteration}`;
 
   return `You are Veo, generating a ${iterationLabel} for ${brand.name}.
+
+⚠️ CRITICAL - BRAND NAME ACCURACY:
+The brand name is "${brand.name}" - spell it EXACTLY as shown.
+Do NOT misspell, modify, or alter the brand name in any way.
+If showing the brand name in text overlays, double-check the spelling matches "${brand.name}" precisely.
+
 Brand voice: ${tone}
 Target audience: ${campaign.audience}
 Product focus: ${campaign.productDescription}
@@ -52,11 +58,13 @@ ${prohibited}
 ${feedback}
 
 Requirements:
+- MOST IMPORTANT: The brand name "${brand.name}" must be spelled EXACTLY correctly in any text overlays or voice-over.
 - Showcase the product clearly within first second.
 - Keep video between 5-10 seconds.
 - Highlight CTA on screen text near the end.
 - Ensure logo appears cleanly in final frame.
 - Avoid hallucinated text or incorrect brand references.
+- If you show the brand name "${brand.name}" in text, verify the spelling is EXACT.
 
 Produce cinematic camera motion, crisp lighting, and social-ready composition.`;
 };

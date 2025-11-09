@@ -25,9 +25,18 @@ export const buildVeoPrompt = (context: GenerationContext): string => {
     : 'Avoid offensive or misleading language.';
 
   const feedback = previousScorecard
-    ? `Previous critique summary: ${previousScorecard.scores
-        .map((score) => `${score.dimension}=${score.score} (${score.status}) => ${score.evidence.summary}`)
-        .join(' | ')}.`
+    ? `Previous video attempt had issues - PLEASE FIX THESE IN THIS GENERATION:
+${previousScorecard.scores
+  .filter((score) => score.status === 'fail')
+  .map((score) => `- ${score.dimension}: ${score.evidence.summary}`)
+  .join('\n')}
+
+${previousScorecard.scores.filter((score) => score.status === 'pass').length > 0 
+  ? `Keep these aspects from previous attempt:\n${previousScorecard.scores
+      .filter((score) => score.status === 'pass')
+      .map((score) => `- ${score.dimension}: ${score.evidence.summary}`)
+      .join('\n')}`
+  : ''}`
     : 'No previous critique feedback; this is the first attempt.';
 
   const iterationLabel = iteration === 1 ? 'Initial concept' : `Refinement pass #${iteration}`;

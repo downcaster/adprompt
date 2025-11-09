@@ -3,20 +3,20 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  Folder, 
-  Layers, 
-  Loader2, 
-  Palette, 
-  PlayCircle, 
-  UploadCloud, 
-  Video, 
+import {
+  Folder,
+  Layers,
+  Loader2,
+  Palette,
+  PlayCircle,
+  UploadCloud,
+  Video,
   Zap,
   Plus,
   CheckCircle2,
   Pencil,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -47,13 +47,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import {
   Dialog,
   DialogContent,
@@ -76,7 +88,9 @@ import { ModeToggle } from "@/components/mode-toggle";
 // Form schemas
 const brandKitSchema = z.object({
   name: z.string().min(1, { message: "Brand name is required" }),
-  toneDescription: z.string().min(1, { message: "Tone description is required" }),
+  toneDescription: z
+    .string()
+    .min(1, { message: "Tone description is required" }),
   targetAudience: z.string().optional(),
   primaryCallToAction: z.string().optional(),
   prohibitedPhrases: z.string().optional(),
@@ -84,7 +98,9 @@ const brandKitSchema = z.object({
 });
 
 const campaignSchema = z.object({
-  productDescription: z.string().min(1, { message: "Product description is required" }),
+  productDescription: z
+    .string()
+    .min(1, { message: "Product description is required" }),
   audience: z.string().min(1, { message: "Audience is required" }),
   callToAction: z.string().min(1, { message: "Call to action is required" }),
   toneKeywords: z.string().min(1, { message: "Tone keywords required" }),
@@ -92,8 +108,12 @@ const campaignSchema = z.object({
 
 export default function DashboardPage() {
   // State
-  const [selectedBrandKitId, setSelectedBrandKitId] = useState<string | null>(null);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+  const [selectedBrandKitId, setSelectedBrandKitId] = useState<string | null>(
+    null
+  );
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(
+    null
+  );
   const [caption, setCaption] = useState("");
   const [regenLimit, setRegenLimit] = useState(5);
   const [isDrafting, setIsDrafting] = useState(false);
@@ -103,27 +123,40 @@ export default function DashboardPage() {
   const [editBrandKitModalOpen, setEditBrandKitModalOpen] = useState(false);
   const [editCampaignModalOpen, setEditCampaignModalOpen] = useState(false);
   const [editingBrandKit, setEditingBrandKit] = useState<BrandKit | null>(null);
-  const [editingCampaign, setEditingCampaign] = useState<CampaignBrief | null>(null);
-  const [continueIterationModalOpen, setContinueIterationModalOpen] = useState(false);
-  const [selectedScorecardForContinue, setSelectedScorecardForContinue] = useState<ScorecardRecord | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState<CampaignBrief | null>(
+    null
+  );
+  const [continueIterationModalOpen, setContinueIterationModalOpen] =
+    useState(false);
+  const [selectedScorecardForContinue, setSelectedScorecardForContinue] =
+    useState<ScorecardRecord | null>(null);
   const [continueIterationCount, setContinueIterationCount] = useState(3);
   const [continuePromptNotes, setContinuePromptNotes] = useState("");
   const [isContinuingIteration, setIsContinuingIteration] = useState(false);
-  
+
   // File uploads
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [paletteFile, setPaletteFile] = useState<File | null>(null);
   const [productFile, setProductFile] = useState<File | null>(null);
 
   // Data fetching
-  const { data: brandKits, mutate: mutateBrandKits } = useSWR<BrandKit[]>("brandKits", listBrandKits);
+  const { data: brandKits, mutate: mutateBrandKits } = useSWR<BrandKit[]>(
+    "brandKits",
+    listBrandKits
+  );
   const { data: campaigns, mutate: mutateCampaigns } = useSWR<CampaignBrief[]>(
     selectedBrandKitId ? `campaigns-${selectedBrandKitId}` : null,
-    () => selectedBrandKitId ? listCampaigns(selectedBrandKitId) : Promise.resolve([])
+    () =>
+      selectedBrandKitId
+        ? listCampaigns(selectedBrandKitId)
+        : Promise.resolve([])
   );
-  const { data: scorecards, mutate: mutateScorecards } = useSWR<ScorecardRecord[]>(
-    selectedCampaignId ? `scorecards-${selectedCampaignId}` : null,
-    () => selectedCampaignId ? listScorecardsByCampaign(selectedCampaignId) : Promise.resolve([])
+  const { data: scorecards, mutate: mutateScorecards } = useSWR<
+    ScorecardRecord[]
+  >(selectedCampaignId ? `scorecards-${selectedCampaignId}` : null, () =>
+    selectedCampaignId
+      ? listScorecardsByCampaign(selectedCampaignId)
+      : Promise.resolve([])
   );
 
   // Forms
@@ -150,20 +183,28 @@ export default function DashboardPage() {
   });
 
   // Selected items
-  const selectedBrandKit = brandKits?.find((kit) => kit.id === selectedBrandKitId);
+  const selectedBrandKit = brandKits?.find(
+    (kit) => kit.id === selectedBrandKitId
+  );
   const selectedCampaign = campaigns?.find((c) => c.id === selectedCampaignId);
   const latestScorecard = scorecards?.[0];
 
   // Handlers
-  const handleCreateBrandKit = async (values: z.infer<typeof brandKitSchema>) => {
+  const handleCreateBrandKit = async (
+    values: z.infer<typeof brandKitSchema>
+  ) => {
     try {
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("toneDescription", values.toneDescription);
-      if (values.targetAudience) formData.append("targetAudience", values.targetAudience);
-      if (values.primaryCallToAction) formData.append("primaryCallToAction", values.primaryCallToAction);
-      if (values.prohibitedPhrases) formData.append("prohibitedPhrases", values.prohibitedPhrases);
-      if (values.manualHexColors) formData.append("manualHexColors", values.manualHexColors);
+      if (values.targetAudience)
+        formData.append("targetAudience", values.targetAudience);
+      if (values.primaryCallToAction)
+        formData.append("primaryCallToAction", values.primaryCallToAction);
+      if (values.prohibitedPhrases)
+        formData.append("prohibitedPhrases", values.prohibitedPhrases);
+      if (values.manualHexColors)
+        formData.append("manualHexColors", values.manualHexColors);
       if (logoFile) formData.append("logo", logoFile);
       if (paletteFile) formData.append("palette", paletteFile);
 
@@ -180,7 +221,9 @@ export default function DashboardPage() {
     }
   };
 
-  const handleCreateCampaign = async (values: z.infer<typeof campaignSchema>) => {
+  const handleCreateCampaign = async (
+    values: z.infer<typeof campaignSchema>
+  ) => {
     if (!selectedBrandKitId) {
       toast.error("Please select a brand kit first");
       return;
@@ -230,7 +273,7 @@ export default function DashboardPage() {
         toast.success(
           payload.final.passed
             ? "Video cleared all critique gates"
-            : "Feedback ready—scores below target",
+            : "Feedback ready—scores below target"
         );
         await mutateScorecards();
       } else {
@@ -251,10 +294,16 @@ export default function DashboardPage() {
     }
   };
 
-  const canGenerate = selectedBrandKitId && selectedCampaignId && !isDrafting && !isGenerating;
+  const canGenerate =
+    selectedBrandKitId && selectedCampaignId && !isDrafting && !isGenerating;
 
   const handleContinueFromScorecard = async () => {
-    if (!selectedScorecardForContinue || !selectedBrandKitId || !selectedCampaignId) return;
+    if (
+      !selectedScorecardForContinue ||
+      !selectedBrandKitId ||
+      !selectedCampaignId
+    )
+      return;
 
     // Close modal immediately so user can see "Iterating..." feedback
     setContinueIterationModalOpen(false);
@@ -268,11 +317,13 @@ export default function DashboardPage() {
         regenLimit: continueIterationCount,
         scorecardId: selectedScorecardForContinue.id,
       });
-      
+
       toast.success(
-        `Continued from iteration ${selectedScorecardForContinue.iteration}! ${payload.final.passed ? "✓ Passed" : "More refinement needed"}`
+        `Continued from iteration ${selectedScorecardForContinue.iteration}! ${
+          payload.final.passed ? "✓ Passed" : "More refinement needed"
+        }`
       );
-      
+
       await mutateScorecards();
       setSelectedScorecardForContinue(null);
       setContinuePromptNotes("");
@@ -306,7 +357,10 @@ export default function DashboardPage() {
     setEditBrandKitModalOpen(true);
   };
 
-  const openEditCampaignModal = (campaign: CampaignBrief, e: React.MouseEvent) => {
+  const openEditCampaignModal = (
+    campaign: CampaignBrief,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation(); // Prevent selecting the campaign
     setEditingCampaign(campaign);
     campaignForm.reset({
@@ -318,17 +372,23 @@ export default function DashboardPage() {
     setEditCampaignModalOpen(true);
   };
 
-  const handleUpdateBrandKit = async (values: z.infer<typeof brandKitSchema>) => {
+  const handleUpdateBrandKit = async (
+    values: z.infer<typeof brandKitSchema>
+  ) => {
     if (!editingBrandKit) return;
 
     try {
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("toneDescription", values.toneDescription);
-      if (values.targetAudience) formData.append("targetAudience", values.targetAudience);
-      if (values.primaryCallToAction) formData.append("primaryCallToAction", values.primaryCallToAction);
-      if (values.prohibitedPhrases) formData.append("prohibitedPhrases", values.prohibitedPhrases);
-      if (values.manualHexColors) formData.append("manualHexColors", values.manualHexColors);
+      if (values.targetAudience)
+        formData.append("targetAudience", values.targetAudience);
+      if (values.primaryCallToAction)
+        formData.append("primaryCallToAction", values.primaryCallToAction);
+      if (values.prohibitedPhrases)
+        formData.append("prohibitedPhrases", values.prohibitedPhrases);
+      if (values.manualHexColors)
+        formData.append("manualHexColors", values.manualHexColors);
       if (logoFile) formData.append("logo", logoFile);
       if (paletteFile) formData.append("palette", paletteFile);
 
@@ -345,7 +405,9 @@ export default function DashboardPage() {
     }
   };
 
-  const handleUpdateCampaign = async (values: z.infer<typeof campaignSchema>) => {
+  const handleUpdateCampaign = async (
+    values: z.infer<typeof campaignSchema>
+  ) => {
     if (!editingCampaign) return;
 
     try {
@@ -456,7 +518,9 @@ export default function DashboardPage() {
           />
         </div>
         <div>
-          <Label htmlFor={`palette-upload${idSuffix}`}>Palette Image (Optional)</Label>
+          <Label htmlFor={`palette-upload${idSuffix}`}>
+            Palette Image (Optional)
+          </Label>
           <Input
             id={`palette-upload${idSuffix}`}
             type="file"
@@ -478,7 +542,10 @@ export default function DashboardPage() {
           <FormItem>
             <FormLabel>Product Description</FormLabel>
             <FormControl>
-              <Textarea placeholder="Premium running shoes with carbon plate" {...field} />
+              <Textarea
+                placeholder="Premium running shoes with carbon plate"
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -517,14 +584,19 @@ export default function DashboardPage() {
           <FormItem>
             <FormLabel>Tone Keywords</FormLabel>
             <FormControl>
-              <Input placeholder="energetic, motivational, premium" {...field} />
+              <Input
+                placeholder="energetic, motivational, premium"
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
       <div>
-        <Label htmlFor={`product-upload${idSuffix}`}>Product Image (Required)</Label>
+        <Label htmlFor={`product-upload${idSuffix}`}>
+          Product Image (Required)
+        </Label>
         <Input
           id={`product-upload${idSuffix}`}
           type="file"
@@ -546,7 +618,9 @@ export default function DashboardPage() {
               <Zap className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">ADPrompt</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                ADPrompt
+              </p>
               <h1 className="text-xl font-semibold">AI Ad Generator</h1>
             </div>
           </div>
@@ -561,7 +635,8 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>📝 What do you want to communicate?</CardTitle>
             <CardDescription>
-              Provide narrative cues for the video. This caption guides Veo&apos;s generation.
+              Provide narrative cues for the video. This caption guides
+              Veo&apos;s generation.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -577,7 +652,9 @@ export default function DashboardPage() {
         {/* Step 2: Connect Brand Kit & Campaign */}
         <div className="space-y-4">
           <div>
-            <h2 className="text-lg font-semibold">Connect your brand & campaign</h2>
+            <h2 className="text-lg font-semibold">
+              Connect your brand & campaign
+            </h2>
             <p className="text-sm text-muted-foreground">
               Both are required to generate videos
             </p>
@@ -598,21 +675,26 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent className="flex flex-col flex-1 justify-between gap-3">
                   <div className="rounded-lg bg-primary/5 p-3 space-y-1">
-                    <p className="font-semibold text-base">{selectedBrandKit.name}</p>
+                    <p className="font-semibold text-base">
+                      {selectedBrandKit.name}
+                    </p>
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {selectedBrandKit.toneDescription}
                     </p>
-                    {selectedBrandKit.derivedPaletteHex && selectedBrandKit.derivedPaletteHex.length > 0 && (
-                      <div className="flex gap-1 mt-2">
-                        {selectedBrandKit.derivedPaletteHex.slice(0, 5).map((color, idx) => (
-                          <div
-                            key={idx}
-                            className="h-4 w-4 rounded-full border"
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                      </div>
-                    )}
+                    {selectedBrandKit.derivedPaletteHex &&
+                      selectedBrandKit.derivedPaletteHex.length > 0 && (
+                        <div className="flex gap-1 mt-2">
+                          {selectedBrandKit.derivedPaletteHex
+                            .slice(0, 5)
+                            .map((color, idx) => (
+                              <div
+                                key={idx}
+                                className="h-4 w-4 rounded-full border"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                        </div>
+                      )}
                   </div>
                   <Button
                     variant="outline"
@@ -658,7 +740,10 @@ export default function DashboardPage() {
                           ))}
                         </div>
                       </ScrollArea>
-                      <Dialog open={brandKitModalOpen} onOpenChange={setBrandKitModalOpen}>
+                      <Dialog
+                        open={brandKitModalOpen}
+                        onOpenChange={setBrandKitModalOpen}
+                      >
                         <DialogTrigger asChild>
                           <Button variant="outline" className="w-full h-10">
                             <Plus className="mr-2 h-4 w-4" /> Create New
@@ -668,15 +753,28 @@ export default function DashboardPage() {
                           <DialogHeader>
                             <DialogTitle>Create Brand Kit</DialogTitle>
                             <DialogDescription>
-                              Define your brand&apos;s personality and visual identity
+                              Define your brand&apos;s personality and visual
+                              identity
                             </DialogDescription>
                           </DialogHeader>
                           <Form {...brandKitForm}>
-                            <form onSubmit={brandKitForm.handleSubmit(handleCreateBrandKit)} className="space-y-4">
+                            <form
+                              onSubmit={brandKitForm.handleSubmit(
+                                handleCreateBrandKit
+                              )}
+                              className="space-y-4"
+                            >
                               {renderBrandKitFormFields()}
-                              <Button type="submit" className="w-full" disabled={brandKitForm.formState.isSubmitting}>
+                              <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={brandKitForm.formState.isSubmitting}
+                              >
                                 {brandKitForm.formState.isSubmitting ? (
-                                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</>
+                                  <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                    Creating...
+                                  </>
                                 ) : (
                                   "Create Brand Kit"
                                 )}
@@ -687,7 +785,10 @@ export default function DashboardPage() {
                       </Dialog>
                     </>
                   ) : (
-                    <Dialog open={brandKitModalOpen} onOpenChange={setBrandKitModalOpen}>
+                    <Dialog
+                      open={brandKitModalOpen}
+                      onOpenChange={setBrandKitModalOpen}
+                    >
                       <DialogTrigger asChild>
                         <Button variant="outline" className="w-full h-20">
                           <Plus className="mr-2 h-5 w-5" /> Create Brand Kit
@@ -697,15 +798,28 @@ export default function DashboardPage() {
                         <DialogHeader>
                           <DialogTitle>Create Brand Kit</DialogTitle>
                           <DialogDescription>
-                            Define your brand&apos;s personality and visual identity
+                            Define your brand&apos;s personality and visual
+                            identity
                           </DialogDescription>
                         </DialogHeader>
                         <Form {...brandKitForm}>
-                          <form onSubmit={brandKitForm.handleSubmit(handleCreateBrandKit)} className="space-y-4">
+                          <form
+                            onSubmit={brandKitForm.handleSubmit(
+                              handleCreateBrandKit
+                            )}
+                            className="space-y-4"
+                          >
                             {renderBrandKitFormFields("-2")}
-                            <Button type="submit" className="w-full" disabled={brandKitForm.formState.isSubmitting}>
+                            <Button
+                              type="submit"
+                              className="w-full"
+                              disabled={brandKitForm.formState.isSubmitting}
+                            >
                               {brandKitForm.formState.isSubmitting ? (
-                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</>
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                  Creating...
+                                </>
                               ) : (
                                 "Create Brand Kit"
                               )}
@@ -726,20 +840,26 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Layers className="h-5 w-5 text-primary" />
-                      <CardTitle className="text-base">Campaign Brief</CardTitle>
+                      <CardTitle className="text-base">
+                        Campaign Brief
+                      </CardTitle>
                     </div>
                     <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
                   </div>
                 </CardHeader>
                 <CardContent className="flex flex-col flex-1 justify-between gap-3">
                   <div className="rounded-lg bg-primary/5 p-3 space-y-2">
-                    <p className="font-semibold text-base line-clamp-2">{selectedCampaign.productDescription}</p>
+                    <p className="font-semibold text-base line-clamp-2">
+                      {selectedCampaign.productDescription}
+                    </p>
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground">
-                        <span className="font-medium">Target:</span> {selectedCampaign.audience}
+                        <span className="font-medium">Target:</span>{" "}
+                        {selectedCampaign.audience}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        <span className="font-medium">CTA:</span> {selectedCampaign.callToAction}
+                        <span className="font-medium">CTA:</span>{" "}
+                        {selectedCampaign.callToAction}
                       </p>
                     </div>
                   </div>
@@ -773,13 +893,17 @@ export default function DashboardPage() {
                               onClick={() => setSelectedCampaignId(campaign.id)}
                             >
                               <button
-                                onClick={(e) => openEditCampaignModal(campaign, e)}
+                                onClick={(e) =>
+                                  openEditCampaignModal(campaign, e)
+                                }
                                 className="absolute top-2 right-2 p-1.5 rounded-md hover:bg-background border opacity-0 group-hover:opacity-100 transition-opacity"
                                 title="Edit campaign"
                               >
                                 <Pencil className="h-3 w-3" />
                               </button>
-                              <p className="font-medium line-clamp-1 pr-8">{campaign.productDescription}</p>
+                              <p className="font-medium line-clamp-1 pr-8">
+                                {campaign.productDescription}
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {campaign.audience}
                               </p>
@@ -787,7 +911,10 @@ export default function DashboardPage() {
                           ))}
                         </div>
                       </ScrollArea>
-                      <Dialog open={campaignModalOpen} onOpenChange={setCampaignModalOpen}>
+                      <Dialog
+                        open={campaignModalOpen}
+                        onOpenChange={setCampaignModalOpen}
+                      >
                         <DialogTrigger asChild>
                           <Button variant="outline" className="w-full h-10">
                             <Plus className="mr-2 h-4 w-4" /> Create New
@@ -801,11 +928,23 @@ export default function DashboardPage() {
                             </DialogDescription>
                           </DialogHeader>
                           <Form {...campaignForm}>
-                            <form onSubmit={campaignForm.handleSubmit(handleCreateCampaign)} className="space-y-4">
+                            <form
+                              onSubmit={campaignForm.handleSubmit(
+                                handleCreateCampaign
+                              )}
+                              className="space-y-4"
+                            >
                               {renderCampaignFormFields()}
-                              <Button type="submit" className="w-full" disabled={campaignForm.formState.isSubmitting}>
+                              <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={campaignForm.formState.isSubmitting}
+                              >
                                 {campaignForm.formState.isSubmitting ? (
-                                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</>
+                                  <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                    Creating...
+                                  </>
                                 ) : (
                                   "Create Campaign"
                                 )}
@@ -816,10 +955,13 @@ export default function DashboardPage() {
                       </Dialog>
                     </>
                   ) : (
-                    <Dialog open={campaignModalOpen} onOpenChange={setCampaignModalOpen}>
+                    <Dialog
+                      open={campaignModalOpen}
+                      onOpenChange={setCampaignModalOpen}
+                    >
                       <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="w-full h-20"
                           disabled={!selectedBrandKitId}
                         >
@@ -834,11 +976,23 @@ export default function DashboardPage() {
                           </DialogDescription>
                         </DialogHeader>
                         <Form {...campaignForm}>
-                          <form onSubmit={campaignForm.handleSubmit(handleCreateCampaign)} className="space-y-4">
+                          <form
+                            onSubmit={campaignForm.handleSubmit(
+                              handleCreateCampaign
+                            )}
+                            className="space-y-4"
+                          >
                             {renderCampaignFormFields("-2")}
-                            <Button type="submit" className="w-full" disabled={campaignForm.formState.isSubmitting}>
+                            <Button
+                              type="submit"
+                              className="w-full"
+                              disabled={campaignForm.formState.isSubmitting}
+                            >
                               {campaignForm.formState.isSubmitting ? (
-                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</>
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                  Creating...
+                                </>
                               ) : (
                                 "Create Campaign"
                               )}
@@ -864,10 +1018,9 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>🚀 Generate Video</CardTitle>
             <CardDescription>
-              {canGenerate 
+              {canGenerate
                 ? "Ready to generate! Choose draft or full critique workflow."
-                : "Complete the steps above to enable generation"
-              }
+                : "Complete the steps above to enable generation"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -883,7 +1036,9 @@ export default function DashboardPage() {
                   min="1"
                   max="10"
                   value={regenLimit}
-                  onChange={(e) => setRegenLimit(Number.parseInt(e.target.value, 10) || 5)}
+                  onChange={(e) =>
+                    setRegenLimit(Number.parseInt(e.target.value, 10) || 5)
+                  }
                   className="w-24"
                 />
                 <p className="text-sm text-muted-foreground">
@@ -891,7 +1046,7 @@ export default function DashboardPage() {
                 </p>
               </div>
             </div>
-            
+
             <Separator />
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -915,7 +1070,10 @@ export default function DashboardPage() {
                 className="h-auto py-4"
               >
                 {isGenerating ? (
-                  <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating & Critiquing...</>
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating
+                    & Critiquing...
+                  </>
                 ) : (
                   <>
                     <Video className="mr-2 h-5 w-5" />
@@ -939,12 +1097,19 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle>Latest Result</CardTitle>
                 <CardDescription>
-                  Iteration {latestScorecard.iteration} · {new Date(latestScorecard.createdAt).toLocaleString()}
+                  Iteration {latestScorecard.iteration} ·{" "}
+                  {new Date(latestScorecard.createdAt).toLocaleString()}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Badge variant={latestScorecard.overallStatus === "pass" ? "default" : "destructive"}>
+                  <Badge
+                    variant={
+                      latestScorecard.overallStatus === "pass"
+                        ? "default"
+                        : "destructive"
+                    }
+                  >
                     {latestScorecard.overallStatus.toUpperCase()}
                   </Badge>
                   <Button
@@ -954,16 +1119,23 @@ export default function DashboardPage() {
                     disabled={isContinuingIteration}
                   >
                     {isContinuingIteration ? (
-                      <><Loader2 className="mr-2 h-3 w-3 animate-spin" /> Iterating...</>
+                      <>
+                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />{" "}
+                        Iterating...
+                      </>
                     ) : (
                       "Continue Iterating"
                     )}
                   </Button>
                 </div>
-                
-                <video 
-                  src={latestScorecard.videoUrl.startsWith('http') ? latestScorecard.videoUrl : `http://localhost:3000${latestScorecard.videoUrl}`} 
-                  controls 
+
+                <video
+                  src={
+                    latestScorecard.videoUrl.startsWith("http")
+                      ? latestScorecard.videoUrl
+                      : `http://localhost:3000${latestScorecard.videoUrl}`
+                  }
+                  controls
                   autoPlay
                   loop
                   className="w-full rounded-md border"
@@ -973,15 +1145,28 @@ export default function DashboardPage() {
 
                 <div className="grid gap-3 md:grid-cols-2">
                   {latestScorecard.scorecard.scores.map((score) => (
-                    <div key={score.dimension} className="rounded-md border p-3 flex flex-col justify-between min-h-[120px]">
+                    <div
+                      key={score.dimension}
+                      className="rounded-md border p-3 flex flex-col justify-between min-h-[120px]"
+                    >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold">{score.dimension}</span>
-                          <Badge variant={score.status === "pass" ? "outline" : "destructive"}>
+                          <span className="font-semibold">
+                            {score.dimension}
+                          </span>
+                          <Badge
+                            variant={
+                              score.status === "pass"
+                                ? "outline"
+                                : "destructive"
+                            }
+                          >
                             {(score.score * 100).toFixed(0)}%
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">{score.evidence.summary}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {score.evidence.summary}
+                        </p>
                       </div>
                       <Progress value={score.score * 100} className="mt-2" />
                     </div>
@@ -993,7 +1178,9 @@ export default function DashboardPage() {
             {scorecards && scorecards.length > 1 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>History ({scorecards.length} iterations)</CardTitle>
+                  <CardTitle>
+                    History ({scorecards.length} iterations)
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Carousel className="w-full">
@@ -1003,48 +1190,73 @@ export default function DashboardPage() {
                           <div className="rounded-lg border p-4">
                             <div className="flex items-center justify-between mb-3">
                               <div>
-                                <p className="font-semibold">Iteration {record.iteration}</p>
+                                <p className="font-semibold">
+                                  Iteration {record.iteration}
+                                </p>
                                 <p className="text-xs text-muted-foreground">
-                                  {formatDistanceToNow(new Date(record.createdAt), { addSuffix: true })}
+                                  {formatDistanceToNow(
+                                    new Date(record.createdAt),
+                                    { addSuffix: true }
+                                  )}
                                 </p>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => openContinueIterationModal(record)}
+                                  onClick={() =>
+                                    openContinueIterationModal(record)
+                                  }
                                   disabled={isContinuingIteration}
                                 >
                                   Continue
                                 </Button>
-                                <Badge variant={record.overallStatus === "pass" ? "default" : "destructive"}>
+                                <Badge
+                                  variant={
+                                    record.overallStatus === "pass"
+                                      ? "default"
+                                      : "destructive"
+                                  }
+                                >
                                   {record.overallStatus.toUpperCase()}
                                 </Badge>
                               </div>
                             </div>
-                            
-                            <video 
-                              src={record.videoUrl.startsWith('http') ? record.videoUrl : `http://localhost:3000${record.videoUrl}`} 
-                              controls 
+
+                            <video
+                              src={
+                                record.videoUrl.startsWith("http")
+                                  ? record.videoUrl
+                                  : `http://localhost:3000${record.videoUrl}`
+                              }
+                              controls
                               className="w-full rounded-md border mb-3"
-                              style={{ maxHeight: '300px' }}
+                              style={{ maxHeight: "300px" }}
                             >
                               Your browser does not support the video tag.
                             </video>
 
                             <div className="grid gap-2 md:grid-cols-2">
                               {record.scorecard.scores.map((score) => (
-                                <div key={`${record.id}-${score.dimension}`} className="rounded-md border px-3 py-2 flex flex-col justify-between min-h-[100px]">
+                                <div
+                                  key={`${record.id}-${score.dimension}`}
+                                  className="rounded-md border px-3 py-2 flex flex-col justify-between min-h-[100px]"
+                                >
                                   <div>
                                     <div className="flex items-center justify-between text-xs font-medium mb-1">
                                       <span>{score.dimension}</span>
-                                      <span>{(score.score * 100).toFixed(0)}%</span>
+                                      <span>
+                                        {(score.score * 100).toFixed(0)}%
+                                      </span>
                                     </div>
                                     <p className="text-xs text-muted-foreground line-clamp-2">
                                       {score.evidence.summary}
                                     </p>
                                   </div>
-                                  <Progress value={score.score * 100} className="mt-2 h-1" />
+                                  <Progress
+                                    value={score.score * 100}
+                                    className="mt-2 h-1"
+                                  />
                                 </div>
                               ))}
                             </div>
@@ -1062,7 +1274,10 @@ export default function DashboardPage() {
         )}
 
         {/* Edit Brand Kit Modal */}
-        <Dialog open={editBrandKitModalOpen} onOpenChange={setEditBrandKitModalOpen}>
+        <Dialog
+          open={editBrandKitModalOpen}
+          onOpenChange={setEditBrandKitModalOpen}
+        >
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Brand Kit</DialogTitle>
@@ -1071,11 +1286,21 @@ export default function DashboardPage() {
               </DialogDescription>
             </DialogHeader>
             <Form {...brandKitForm}>
-              <form onSubmit={brandKitForm.handleSubmit(handleUpdateBrandKit)} className="space-y-4">
+              <form
+                onSubmit={brandKitForm.handleSubmit(handleUpdateBrandKit)}
+                className="space-y-4"
+              >
                 {renderBrandKitFormFields("-edit")}
-                <Button type="submit" className="w-full" disabled={brandKitForm.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={brandKitForm.formState.isSubmitting}
+                >
                   {brandKitForm.formState.isSubmitting ? (
-                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating...</>
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                      Updating...
+                    </>
                   ) : (
                     "Update Brand Kit"
                   )}
@@ -1086,7 +1311,10 @@ export default function DashboardPage() {
         </Dialog>
 
         {/* Edit Campaign Modal */}
-        <Dialog open={editCampaignModalOpen} onOpenChange={setEditCampaignModalOpen}>
+        <Dialog
+          open={editCampaignModalOpen}
+          onOpenChange={setEditCampaignModalOpen}
+        >
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Campaign</DialogTitle>
@@ -1095,11 +1323,21 @@ export default function DashboardPage() {
               </DialogDescription>
             </DialogHeader>
             <Form {...campaignForm}>
-              <form onSubmit={campaignForm.handleSubmit(handleUpdateCampaign)} className="space-y-4">
+              <form
+                onSubmit={campaignForm.handleSubmit(handleUpdateCampaign)}
+                className="space-y-4"
+              >
                 {renderCampaignFormFields("-edit")}
-                <Button type="submit" className="w-full" disabled={campaignForm.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={campaignForm.formState.isSubmitting}
+                >
                   {campaignForm.formState.isSubmitting ? (
-                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating...</>
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                      Updating...
+                    </>
                   ) : (
                     "Update Campaign"
                   )}
@@ -1110,25 +1348,38 @@ export default function DashboardPage() {
         </Dialog>
 
         {/* Continue Iteration Modal */}
-        <Dialog open={continueIterationModalOpen} onOpenChange={setContinueIterationModalOpen}>
+        <Dialog
+          open={continueIterationModalOpen}
+          onOpenChange={setContinueIterationModalOpen}
+        >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Continue Iterating from Iteration {selectedScorecardForContinue?.iteration}</DialogTitle>
+              <DialogTitle>
+                Continue Iterating from Iteration{" "}
+                {selectedScorecardForContinue?.iteration}
+              </DialogTitle>
               <DialogDescription>
-                Create additional iterations building on this result's prompt and critique feedback.
+                Create additional iterations building on this result's prompt
+                and critique feedback.
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="continue-iterations">Number of Additional Iterations</Label>
+                <Label htmlFor="continue-iterations">
+                  Number of Additional Iterations
+                </Label>
                 <Input
                   id="continue-iterations"
                   type="number"
                   min="1"
                   max="10"
                   value={continueIterationCount}
-                  onChange={(e) => setContinueIterationCount(Number.parseInt(e.target.value, 10) || 3)}
+                  onChange={(e) =>
+                    setContinueIterationCount(
+                      Number.parseInt(e.target.value, 10) || 3
+                    )
+                  }
                 />
                 <p className="text-xs text-muted-foreground">
                   How many more iterations to try (max 10)
@@ -1136,7 +1387,9 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="continue-prompt-notes">Additional Prompt Notes (Optional)</Label>
+                <Label htmlFor="continue-prompt-notes">
+                  Additional Prompt Notes (Optional)
+                </Label>
                 <Textarea
                   id="continue-prompt-notes"
                   placeholder="Add any specific instructions or refinements to guide the next iterations..."
@@ -1145,16 +1398,27 @@ export default function DashboardPage() {
                   className="min-h-[100px]"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Leave empty to use the original caption. Add notes to refine the direction.
+                  Leave empty to use the original caption. Add notes to refine
+                  the direction.
                 </p>
               </div>
 
               {selectedScorecardForContinue && (
                 <div className="rounded-lg bg-muted/50 p-3 space-y-2">
-                  <p className="text-sm font-semibold">This will continue from:</p>
+                  <p className="text-sm font-semibold">
+                    This will continue from:
+                  </p>
                   <ul className="text-xs space-y-1">
-                    <li>• Iteration {selectedScorecardForContinue.iteration} critique feedback</li>
-                    <li>• Overall status: <span className="font-medium">{selectedScorecardForContinue.overallStatus}</span></li>
+                    <li>
+                      • Iteration {selectedScorecardForContinue.iteration}{" "}
+                      critique feedback
+                    </li>
+                    <li>
+                      • Overall status:{" "}
+                      <span className="font-medium">
+                        {selectedScorecardForContinue.overallStatus}
+                      </span>
+                    </li>
                     <li>• Scores will inform the next generation prompts</li>
                   </ul>
                 </div>
@@ -1180,9 +1444,14 @@ export default function DashboardPage() {
                 disabled={isContinuingIteration}
               >
                 {isContinuingIteration ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iterating...</>
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                    Iterating...
+                  </>
                 ) : (
-                  `Start ${continueIterationCount} Iteration${continueIterationCount > 1 ? 's' : ''}`
+                  `Start ${continueIterationCount} Iteration${
+                    continueIterationCount > 1 ? "s" : ""
+                  }`
                 )}
               </Button>
             </div>

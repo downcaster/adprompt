@@ -14,7 +14,9 @@ import {
   Zap,
   Plus,
   CheckCircle2,
-  Pencil
+  Pencil,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -51,6 +53,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
   Dialog,
   DialogContent,
@@ -993,61 +996,65 @@ export default function DashboardPage() {
                   <CardTitle>History ({scorecards.length} iterations)</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[400px]">
-                    <div className="space-y-4 pr-4">
+                  <Carousel className="w-full">
+                    <CarouselContent>
                       {scorecards.slice(1).map((record) => (
-                        <div key={record.id} className="rounded-lg border p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <p className="font-semibold">Iteration {record.iteration}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(new Date(record.createdAt), { addSuffix: true })}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openContinueIterationModal(record)}
-                                disabled={isContinuingIteration}
-                              >
-                                Continue
-                              </Button>
-                              <Badge variant={record.overallStatus === "pass" ? "default" : "destructive"}>
-                                {record.overallStatus.toUpperCase()}
-                              </Badge>
-                            </div>
-                          </div>
-                          
-                          <video 
-                            src={record.videoUrl.startsWith('http') ? record.videoUrl : `http://localhost:3000${record.videoUrl}`} 
-                            controls 
-                            className="w-full rounded-md border mb-3"
-                            style={{ maxHeight: '200px' }}
-                          >
-                            Your browser does not support the video tag.
-                          </video>
-
-                          <div className="grid gap-2 md:grid-cols-2">
-                            {record.scorecard.scores.map((score) => (
-                              <div key={`${record.id}-${score.dimension}`} className="rounded-md border px-3 py-2 flex flex-col justify-between min-h-[100px]">
-                                <div>
-                                  <div className="flex items-center justify-between text-xs font-medium mb-1">
-                                    <span>{score.dimension}</span>
-                                    <span>{(score.score * 100).toFixed(0)}%</span>
-                                  </div>
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
-                                    {score.evidence.summary}
-                                  </p>
-                                </div>
-                                <Progress value={score.score * 100} className="mt-2 h-1" />
+                        <CarouselItem key={record.id}>
+                          <div className="rounded-lg border p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <p className="font-semibold">Iteration {record.iteration}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatDistanceToNow(new Date(record.createdAt), { addSuffix: true })}
+                                </p>
                               </div>
-                            ))}
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => openContinueIterationModal(record)}
+                                  disabled={isContinuingIteration}
+                                >
+                                  Continue
+                                </Button>
+                                <Badge variant={record.overallStatus === "pass" ? "default" : "destructive"}>
+                                  {record.overallStatus.toUpperCase()}
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            <video 
+                              src={record.videoUrl.startsWith('http') ? record.videoUrl : `http://localhost:3000${record.videoUrl}`} 
+                              controls 
+                              className="w-full rounded-md border mb-3"
+                              style={{ maxHeight: '300px' }}
+                            >
+                              Your browser does not support the video tag.
+                            </video>
+
+                            <div className="grid gap-2 md:grid-cols-2">
+                              {record.scorecard.scores.map((score) => (
+                                <div key={`${record.id}-${score.dimension}`} className="rounded-md border px-3 py-2 flex flex-col justify-between min-h-[100px]">
+                                  <div>
+                                    <div className="flex items-center justify-between text-xs font-medium mb-1">
+                                      <span>{score.dimension}</span>
+                                      <span>{(score.score * 100).toFixed(0)}%</span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground line-clamp-2">
+                                      {score.evidence.summary}
+                                    </p>
+                                  </div>
+                                  <Progress value={score.score * 100} className="mt-2 h-1" />
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        </CarouselItem>
                       ))}
-                    </div>
-                  </ScrollArea>
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
                 </CardContent>
               </Card>
             )}

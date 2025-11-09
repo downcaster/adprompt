@@ -82,7 +82,7 @@ export function BrandKitFormFields({
           <FormItem>
             <FormLabel>Target Audience (Optional)</FormLabel>
             <FormControl>
-              <Input placeholder="Millennials aged 25-40" {...field} />
+              <Input placeholder="Millennials aged 25-40" {...field} value={field.value || ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -95,7 +95,7 @@ export function BrandKitFormFields({
           <FormItem>
             <FormLabel>Primary CTA (Optional)</FormLabel>
             <FormControl>
-              <Input placeholder="Shop Now" {...field} />
+              <Input placeholder="Shop Now" {...field} value={field.value || ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -108,7 +108,7 @@ export function BrandKitFormFields({
           <FormItem>
             <FormLabel>Prohibited Phrases (Optional)</FormLabel>
             <FormControl>
-              <Input placeholder="cheap, discount, sale" {...field} />
+              <Input placeholder="cheap, discount, sale" {...field} value={field.value || ""} />
             </FormControl>
             <FormDescription>Comma-separated list</FormDescription>
             <FormMessage />
@@ -122,7 +122,7 @@ export function BrandKitFormFields({
           <FormItem>
             <FormLabel>Brand Colors (Optional)</FormLabel>
             <FormControl>
-              <Input placeholder="#FF5733, #3498DB, blue" {...field} />
+              <Input placeholder="#FF5733, #3498DB, blue" {...field} value={field.value || ""} />
             </FormControl>
             <FormDescription>
               Hex codes or color names, comma-separated

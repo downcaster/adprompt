@@ -49,6 +49,7 @@ export function CampaignFormFields({
               <Textarea
                 placeholder="Premium running shoes with carbon plate"
                 {...field}
+                value={field.value || ""}
               />
             </FormControl>
             <FormMessage />
@@ -62,7 +63,7 @@ export function CampaignFormFields({
           <FormItem>
             <FormLabel>Target Audience</FormLabel>
             <FormControl>
-              <Input placeholder="Athletes aged 20-35" {...field} />
+              <Input placeholder="Athletes aged 20-35" {...field} value={field.value || ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -75,7 +76,7 @@ export function CampaignFormFields({
           <FormItem>
             <FormLabel>Call to Action</FormLabel>
             <FormControl>
-              <Input placeholder="Shop Now" {...field} />
+              <Input placeholder="Shop Now" {...field} value={field.value || ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -91,6 +92,7 @@ export function CampaignFormFields({
               <Input
                 placeholder="energetic, motivational, premium"
                 {...field}
+                value={field.value || ""}
               />
             </FormControl>
             <FormMessage />

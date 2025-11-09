@@ -9,10 +9,11 @@ export interface GenerationContext {
   campaign: CampaignBrief;
   iteration: number;
   previousScorecard?: Scorecard;
+  caption?: string;
 }
 
 export const buildVeoPrompt = (context: GenerationContext): string => {
-  const { brand, campaign, iteration, previousScorecard } = context;
+  const { brand, campaign, iteration, previousScorecard, caption } = context;
 
   const palette = brand.derivedPaletteHex?.length
     ? `Color palette: ${brand.derivedPaletteHex.join(', ')}`
@@ -23,6 +24,10 @@ export const buildVeoPrompt = (context: GenerationContext): string => {
   const prohibited = brand.prohibitedPhrases?.length
     ? `Avoid phrases: ${brand.prohibitedPhrases.join(', ')}`
     : 'Avoid offensive or misleading language.';
+
+  const userGuidance = caption
+    ? `\n🎬 USER'S CREATIVE DIRECTION:\n${caption}\n\nFollow this creative direction closely while adhering to brand requirements below.`
+    : '';
 
   const feedback = previousScorecard
     ? `Previous video attempt had issues - PLEASE FIX THESE IN THIS GENERATION:
@@ -41,7 +46,7 @@ ${previousScorecard.scores.filter((score) => score.status === 'pass').length > 0
 
   const iterationLabel = iteration === 1 ? 'Initial concept' : `Refinement pass #${iteration}`;
 
-  return `You are Veo, generating a ${iterationLabel} for ${brand.name}.
+  return `You are Veo, generating a ${iterationLabel} for ${brand.name}.${userGuidance}
 
 ⚠️ CRITICAL - BRAND NAME ACCURACY:
 The brand name is "${brand.name}" - spell it EXACTLY as shown.

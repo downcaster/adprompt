@@ -45,9 +45,16 @@ export const generateVideo = async (
 
   console.log('Video generation complete!');
 
+  // Log the full response for debugging
+  console.log('Veo operation response:', JSON.stringify(operation, null, 2));
+
   // Validate response structure
   if (!operation.response?.generatedVideos?.[0]?.video) {
-    throw new Error('Veo operation completed but no video was generated');
+    const errorDetails = operation.error 
+      ? `Error: ${JSON.stringify(operation.error)}`
+      : 'No video in response (possible content policy violation or generation failure)';
+    console.error('Veo generation failed:', errorDetails);
+    throw new Error(`Veo operation completed but no video was generated. ${errorDetails}`);
   }
 
   // Download the generated video

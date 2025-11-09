@@ -68,6 +68,7 @@ export const generateWithCritique = async (
       campaign: options.campaign,
       iteration,
       previousScorecard,
+      caption: options.caption,
     });
 
     const videoPublicUrl = buildPublicUploadUrl(generation.videoPath);
@@ -134,6 +135,7 @@ export const generateOnly = async (
     brand: options.brand,
     campaign: options.campaign,
     iteration: 1,
+    caption: options.caption,
   });
 
   return {
